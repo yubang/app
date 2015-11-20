@@ -1,0 +1,13 @@
+php5.5 docker环境
+
+软件版本：
+wget  1.15
+unzip 6.00
+apache 2.4.7
+php 5.5.9
+
+
+生成镜像命令
+docker build -t paas-php55 .
+启动命令
+docker run -d -p 9000:80 paas-php55 /bin/bash /tmp/start.sh "http://172.16.46.100/zip/a.zip"

@@ -3,6 +3,7 @@
 软件版本：
 nginx 1.4.6
 wget  1.15
+unzip 6.00
 
 生成镜像命令
 docker build -t paas-static .
