@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # 安装各种必须的软件
-
 yum groupinstall "Development tools" -y
 yum install zlib-devel -y
 yum install bzip2-devel -y
@@ -22,7 +21,8 @@ make && make install
 yum -y install zlib zlib-devel openssl openssl--devel pcre pcre-devel
 
 cd /tmp
-wget --tries=5 --no-check-certificate --cache=off http://nginx.org/download/nginx-1.8.0.tar.gz
+wget --spider http://nginx.org/download/nginx-1.8.0.tar.gz
+curl -o nginx-1.8.0.tar.gz http://nginx.org/download/nginx-1.8.0.tar.gz
 tar -zxvf nginx-1.8.0.tar.gz
 cd nginx-1.8.0
 ./configure --prefix=/usr/local/nginx
