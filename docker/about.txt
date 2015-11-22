@@ -1,0 +1,19 @@
+所有镜像启动容器需要运行脚本
+docker run -d -p {需要映射到主机的端口}:80 paas-go /bin/bash /tmp/start.sh "{代码zip包下载地址，注意不要用文件夹包裹代码}"
+
+
+go1.5
+要求入口文件为index.go，需要监听127.0.0.1:8000
+
+python2.7
+要求入口文件为index.py，wsgi函数的变量名为app，需要提供requirements.txt
+
+python3.5
+要求入口文件为index.py，wsgi函数的变量名为app，需要提供requirements.txt
+
+static
+没有特殊要求
+
+node.js4..2
+要求入口文件为index.js，需要提供package.json，需要监听127.0.0.1:8000
+

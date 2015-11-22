@@ -33,6 +33,7 @@ python2.7 setup.py install
 
 cd /tmp
 yum -y install zlib zlib-devel openssl openssl--devel pcre pcre-devel
+wget --spider http://nginx.org/download/nginx-1.8.0.tar.gz
 wget http://nginx.org/download/nginx-1.8.0.tar.gz
 tar -zxvf nginx-1.8.0.tar.gz
 cd nginx-1.8.0
