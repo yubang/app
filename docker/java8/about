@@ -1,0 +1,13 @@
+java8 docker
+
+软件版本：
+nginx 1.8.0
+wget  1.15
+tar 1.23
+java 1.8.0_65
+jetty 9.3.6
+
+生成镜像命令
+docker build -t paas-java8 .
+启动命令
+docker run -d -p 9000:80 paas-java8 /bin/bash /tmp/start.sh "http://172.16.46.100/zip/e.zip"

@@ -17,3 +17,8 @@ static
 node.js4..2
 要求入口文件为index.js，需要提供package.json，需要监听127.0.0.1:8000
 
+java8
+要求上传war包，容器是jetty，处理方式按jetty的默认方式处理
+由于jetty版本是1.9，所以除了war包，还需要对应的xml，参考网址：http://smilejay.com/2013/06/deploy-jenkins-in-jetty/
+
+
