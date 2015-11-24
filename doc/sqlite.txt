@@ -1,0 +1,10 @@
+// sqlite
+create table if not exists container(
+    id INTEGER  PRIMARY KEY AUTOINCREMENT ,
+    container_id varchar(100) not null ,
+    port int(11) not null ,
+    memory int(11) not null,
+    image_name varchar(20) not null,
+    code_address varchar(255) not null,
+    create_time datetime not null
+);

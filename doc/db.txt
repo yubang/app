@@ -1,0 +1,12 @@
+// mysql
+create table if not exists container(
+    id int(11) auto_increment comment '主键',
+    container_id varchar(100) not null comment '容器id',
+    port int(11) not null comment '容器端口',
+    memory int(11) not null comment '内存',
+    image_name varchar(20) not null comment '镜像名字',
+    code_address varchar(255) not null comment '代码地址',
+    create_time datetime not null comment '创建时间',
+    primary key(id)
+);
+
