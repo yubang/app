@@ -10,6 +10,7 @@ docker容器管理插件
 
 from bottle import Bottle, request
 from model.container import ContainerModel
+from lib import docker
 import subprocess
 import datetime
 import urllib
@@ -226,14 +227,9 @@ def stats():
     if not container_id:
         return {"code": 10002}
 
-    command = "docker stats %s" % container_id
-    code, result = subprocess.getstatusoutput(command)
-
-    print(result)
+    code, r = docker.get_container_memory_and_cpu(container_id)
 
     if code != 0:
         return {"code": 10004}
-
-
 
     return {"code": 0}
