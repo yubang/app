@@ -90,6 +90,28 @@ def build_one_container(image_name, memory, code_address):
     return {"code": 0, "result": {"containerId": result, "port": port}}
 
 
+def option_container(container_id, token, option):
+    """
+    操作容器
+    :param container_id: 容器id
+    :param token: 校验token
+    :param option: 操作命令
+    :return:
+    """
+    if not check_token(token):
+        return {"code": 10001}
+
+    if not container_id:
+        return {"code": 10002}
+
+    command = "docker %s %s" % (option, container_id)
+    code, _ = subprocess.getstatusoutput(command)
+    if code != 0:
+        return {"code": 10004}
+
+    return {"code": 0}
+
+
 @container_app.post("/build")
 def build():
     """
@@ -120,7 +142,24 @@ def start():
     启动容器
     :return:
     """
-    return {}
+
+    container_id = request.forms.get('containerId', None)
+    token = request.forms.get('token', None)
+
+    return option_container(container_id, token, "start")
+
+
+@container_app.post("/restart")
+def restart():
+    """
+    启动容器
+    :return:
+    """
+
+    container_id = request.forms.get('containerId', None)
+    token = request.forms.get('token', None)
+
+    return option_container(container_id, token, "restart")
 
 
 @container_app.post("/stop")
@@ -129,7 +168,11 @@ def stop():
     停止容器
     :return:
     """
-    return {}
+
+    container_id = request.forms.get('containerId', None)
+    token = request.forms.get('token', None)
+
+    return option_container(container_id, token, "stop")
 
 
 @container_app.post("/remove")
@@ -138,7 +181,11 @@ def remove():
     删除容器
     :return:
     """
-    return {}
+
+    container_id = request.forms.get('containerId', None)
+    token = request.forms.get('token', None)
+
+    return option_container(container_id, token, "rm -f")
 
 
 @container_app.post("/analy")
