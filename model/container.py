@@ -7,7 +7,7 @@
 """
 
 from peewee import CharField, IntegerField, DateTimeField
-from model.base import BaseModel
+from model.base import BaseModel, db
 
 
 class ContainerModel(BaseModel):
@@ -16,6 +16,18 @@ class ContainerModel(BaseModel):
     """
     class Meta:
         db_table = "container"
+
+    @classmethod
+    def get_total_memory(cls):
+        """
+        获取容器占用内存
+        :return: int
+        """
+        c = db.execute_sql("select sum(memory) from container")
+        obj = c.fetchone()
+        if not obj or not obj[0]:
+            return 0
+        return int(obj[0])
 
     id = IntegerField()
     container_id = CharField(max_length=100)

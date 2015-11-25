@@ -185,7 +185,12 @@ def remove():
     container_id = request.forms.get('containerId', None)
     token = request.forms.get('token', None)
 
-    return option_container(container_id, token, "rm -f")
+    r = option_container(container_id, token, "rm -f")
+
+    if r['code'] == 0:
+        dao = ContainerModel.delete().filter(container_id=container_id)
+        dao.execute()
+    return r
 
 
 @container_app.post("/analy")
@@ -194,7 +199,15 @@ def analy():
     获取主机容器状态
     :return: dict
     """
-    return {}
+
+    token = request.forms.get('token', None)
+    if not check_token(token):
+        return {"code": 10001}
+
+    count = ContainerModel.select().count()
+    memory = ContainerModel.get_total_memory()
+
+    return {"code": 0, "result": {"count": count, "totalMemory": memory}}
 
 
 @container_app.post("/stats")

@@ -39,40 +39,43 @@ port        容器端口    必须      int（范围10000~30000）
 /container/start
 功能：启动容器
 请求方法：
-GET /container/start
+POST /container/start
 参数说明：
 containerId     容器id    必须      string
 返回值说明：
 code    全局返回码   必须      int
-result  结果集     必须      object
-optionResult 操作结果   必须  int （0为成功，1为失败）
 返回值示例：
 {
-    "code": 0,
-    "result": {
-        "optionResult": 0
-    }
+    "code": 0
 }
 
 
+
+/container/restart
+功能：重启容器
+请求方法：
+POST /container/restart
+参数说明：
+containerId     容器id    必须      string
+返回值说明：
+code    全局返回码   必须      int
+返回值示例：
+{
+    "code": 0
+}
 
 
 /container/stop
 功能：停止容器
 请求方法：
-GET /container/stop
+POST /container/stop
 参数说明：
 containerId     容器id    必须      string
 返回值说明：
 code    全局返回码   必须      int
-result  结果集     必须      object
-optionResult 操作结果   必须  int （0为成功，1为失败）
 返回值示例：
 {
-    "code": 0,
-    "result": {
-        "optionResult": 0
-    }
+    "code": 0
 }
 
 
@@ -81,19 +84,14 @@ optionResult 操作结果   必须  int （0为成功，1为失败）
 /container/remove
 功能：删除容器
 请求方法：
-GET /container/remove
+POST /container/remove
 参数说明：
 containerId     容器id    必须      string
 返回值说明：
 code    全局返回码   必须      int
-result  结果集     必须      object
-optionResult 操作结果   必须  int （0为成功，1为失败）
 返回值示例：
 {
-    "code": 0,
-    "result": {
-        "optionResult": 0
-    }
+    "code": 0
 }
 
 
@@ -101,19 +99,21 @@ optionResult 操作结果   必须  int （0为成功，1为失败）
 
 /container/analy
 功能：获取服务器容器情况
-请求方法：GET /container/analy
-
+请求方法：
+POST /container/analy
 参数说明：
 
 返回值说明：
 code    全局返回码   必须      int
 result  结果集     必须      object
 count 容器个数   必须  int
+totalMemory 容器最大占用内存    必须  int（以m为单位）
 返回值示例：
 {
     "code": 0,
     "result": {
-        "count": 20
+        "count": 20,
+        "totalMemory": 1024
     }
 }
 
