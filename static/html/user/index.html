@@ -20,7 +20,7 @@
 
         <div class="content-div">
             <!--添加应用按钮-->
-            <button type="button" class="btn btn-info">添加应用</button>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addAppDiv">添加应用</button>
         </div>
         <hr>
         <div class="content-div">
@@ -45,6 +45,70 @@
               </div>
             </div>
         </div>
+
+        <!--添加应用窗口-->
+        <div class="modal fade" id="addAppDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">添加新应用</h4>
+              </div>
+              <div class="modal-body">
+                <form action="" method="post">
+                  <div class="form-group">
+                    <label for="title">应用名称</label>
+                    <input type="text" class="form-control" id="title" placeholder="请输入应用标题">
+                  </div>
+                  <div class="form-group">
+                    <label for="description">应用名称</label>
+                    <textarea rows="5" class="form-control" id="description" placeholder="请输入应用描述"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="min_number">最小容器数量（<b>1</b>）</label>
+                    <input type="range" class="form-control" id="min_number" min="0" max="5" value="1">
+                  </div>
+                  <div class="form-group">
+                    <label for="max_number">最大容器数量（<b>5</b>）</label>
+                    <input type="range" class="form-control" id="max_number" min="0" max="5" value="5">
+                  </div>
+                  <div class="form-group">
+                    <label for="memory">容器内存（<b>128M</b>）</label>
+                    <input type="range" class="form-control" id="memory" min="64" max="1024" value="128" step="64">
+                  </div>
+                  <div class="form-group">
+                    <label for="env">容器环境</label>
+                    <select id="env" class="form-control">
+                        <option value="0">python2.7.9</option>
+                        <option value="1">python3.5.0</option>
+                        <option value="2">go1.5</option>
+                        <option value="3">nodejs4</option>
+                        <option value="4">java8</option>
+                        <option value="5">static</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="app_host">应用域名</label>
+                    <input type="text" class="form-control" id="app_host" placeholder="请输入应用域名">
+                  </div>
+                  <div class="form-group">
+                    <label for="app_port">应用端口</label>
+                    <input type="number" class="form-control" id="app_port" placeholder="请输入应用端口">
+                  </div>
+                  <div class="form-group">
+                    <label for="code_address">代码地址</label>
+                    <input type="text" class="form-control" id="code_address" placeholder="请输入代码地址">
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消添加</button>
+                <button type="button" class="btn btn-primary">添加</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     </body>
