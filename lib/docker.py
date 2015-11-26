@@ -48,5 +48,11 @@ def get_container_memory_and_cpu(container_id):
     """
     docker_command = "/containers/%s/stats?stream=0" % container_id
     code, obj = docker_get_message(docker_command)
-    print(obj)
-    return (0, 0)
+
+    if code != 0:
+        return code, {"cpu": 0, "memory": 0}
+
+    memory = int(obj['memory_stats']['usage']) * 100 / int(obj['memory_stats']['limit'])
+    memory = float('%0.2f' % memory)
+
+    return 0, {"cpu": 0, "memory": memory}

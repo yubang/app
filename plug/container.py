@@ -74,7 +74,7 @@ def build_one_container(image_name, memory, code_address):
 
     port = get_one_able_post()
     system_image = get_realname_from_image_name(image_name)
-    command = "docker run -d -m %dm -p %d:80 %s /bin/bash /tmp/start.sh '%s'" % (int(memory) / 2, port, system_image, code_address)
+    command = "docker run -d -m %dm -p %d:80 %s /bin/bash /tmp/start.sh '%s'" % (int(memory), port, system_image, code_address)
 
     code, result = subprocess.getstatusoutput(command)
     if code != 0:
@@ -232,4 +232,4 @@ def stats():
     if code != 0:
         return {"code": 10004}
 
-    return {"code": 0}
+    return {"code": 0, "result": {"memory": r['memory'], "cpu": r['cpu']}}
