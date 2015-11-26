@@ -14,7 +14,7 @@ cd /var/www/html
 pip3 install -r requirements.txt
 
 # 启动进程
-gunicorn -b 127.0.0.1:8000 -w 20 index:app
+gunicorn -b 127.0.0.1:8000 -w 5 index:app
 
 while true
 do

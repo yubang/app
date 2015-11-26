@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>控制台</title>
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/css/user.css">
+    </head>
+    <body>
+        <!--导航-->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="javascript:void();">
+                paas用户控制台
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <div class="content-div">
+            <!--添加应用按钮-->
+            <button type="button" class="btn btn-info">添加应用</button>
+        </div>
+        <hr>
+        <div class="content-div">
+            <div class="panel panel-success">
+              <div class="panel-heading">{{应用名称}}</div>
+              <div class="panel-body">
+                <p>应用描述：{{应用描述}}</p>
+                <p>
+                    应用最小容器数量：<b>1</b>&nbsp;&nbsp;&nbsp;
+                    应用最大容器数量：<b>5</b>&nbsp;&nbsp;&nbsp;
+                    应用当前容器数量：<b>3</b>&nbsp;&nbsp;&nbsp;
+                </p>
+                <p>容器最大内存：{{128M}}</p>
+                  <p>代码地址：{{代码地址}}</p>
+                <p>应用环境：{{python3}}</p>
+                <p>
+                    <a href="" class="btn btn-info">打开应用</a>
+                    <button type="button" class="btn btn-info">重新部署应用</button>
+                    <button type="button" class="btn btn-info">编辑应用</button>
+                    <button type="button" class="btn btn-danger">删除应用</button>
+                </p>
+              </div>
+            </div>
+        </div>
+        <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    </body>
+</html>
