@@ -34,11 +34,17 @@ def __socket_to_docker(docker_command):
 
 
 def docker_get_message(docker_command):
+    """
+    调用docker命令
+    :param docker_command: docker命令字符串
+    :return: int（结果状态）, dict(结果对象)
+    """
     try:
         return 0, __socket_to_docker(docker_command)
     except Exception:
         raise
         return -1, None
+
 
 def get_container_memory_and_cpu(container_id):
     """
@@ -54,5 +60,8 @@ def get_container_memory_and_cpu(container_id):
 
     memory = int(obj['memory_stats']['usage']) * 100 / int(obj['memory_stats']['limit'])
     memory = float('%0.2f' % memory)
+    print(obj['cpu_stats'])
+    cpu = int(obj['cpu_stats']['cpu_usage']['total_usage']) * 100 / int(obj['cpu_stats']['system_cpu_usage'])
+    cpu = float('%0.2f' % cpu)
 
-    return 0, {"cpu": 0, "memory": memory}
+    return 0, {"cpu": cpu, "memory": memory}
