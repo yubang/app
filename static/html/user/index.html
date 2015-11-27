@@ -23,27 +23,8 @@
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addAppDiv">添加应用</button>
         </div>
         <hr>
-        <div class="content-div">
-            <div class="panel panel-success">
-              <div class="panel-heading">{{应用名称}}</div>
-              <div class="panel-body">
-                <p>应用描述：{{应用描述}}</p>
-                <p>
-                    应用最小容器数量：<b>1</b>&nbsp;&nbsp;&nbsp;
-                    应用最大容器数量：<b>5</b>&nbsp;&nbsp;&nbsp;
-                    应用当前容器数量：<b>3</b>&nbsp;&nbsp;&nbsp;
-                </p>
-                <p>容器最大内存：{{128M}}</p>
-                  <p>代码地址：{{代码地址}}</p>
-                <p>应用环境：{{python3}}</p>
-                <p>
-                    <a href="" class="btn btn-info">打开应用</a>
-                    <button type="button" class="btn btn-info">重新部署应用</button>
-                    <button type="button" class="btn btn-info">编辑应用</button>
-                    <button type="button" class="btn btn-danger">删除应用</button>
-                </p>
-              </div>
-            </div>
+        <div class="content-div" id="content">
+
         </div>
 
         <!--添加应用窗口-->
@@ -55,61 +36,90 @@
                 <h4 class="modal-title" id="myModalLabel">添加新应用</h4>
               </div>
               <div class="modal-body">
-                <form action="" method="post">
+                <form action="/user/addApp" method="post">
                   <div class="form-group">
                     <label for="title">应用名称</label>
-                    <input type="text" class="form-control" id="title" placeholder="请输入应用标题">
+                    <input type="text" class="form-control" id="title" name="title" placeholder="请输入应用标题" required>
                   </div>
                   <div class="form-group">
-                    <label for="description">应用名称</label>
-                    <textarea rows="5" class="form-control" id="description" placeholder="请输入应用描述"></textarea>
+                    <label for="description">应用描述</label>
+                    <textarea rows="5" class="form-control" id="description" name="description" placeholder="请输入应用描述" required></textarea>
                   </div>
                   <div class="form-group">
                     <label for="min_number">最小容器数量（<b>1</b>）</label>
-                    <input type="range" class="form-control" id="min_number" min="0" max="5" value="1">
+                    <input type="range" class="form-control" onchange="changeValue(this, 'min_number');" id="min_number" name="min_number" min="0" max="5" value="1">
                   </div>
                   <div class="form-group">
                     <label for="max_number">最大容器数量（<b>5</b>）</label>
-                    <input type="range" class="form-control" id="max_number" min="0" max="5" value="5">
+                    <input type="range" class="form-control" onchange="changeValue(this, 'max_number');" id="max_number" name="max_number" min="0" max="5" value="5">
                   </div>
                   <div class="form-group">
-                    <label for="memory">容器内存（<b>128M</b>）</label>
-                    <input type="range" class="form-control" id="memory" min="64" max="1024" value="128" step="64">
+                    <label for="memory">容器内存（<b>128</b>M）</label>
+                    <input type="range" class="form-control" onchange="changeValue(this, 'memory');" id="memory" name="memory" min="64" max="1024" value="128" step="64">
                   </div>
                   <div class="form-group">
                     <label for="env">容器环境</label>
-                    <select id="env" class="form-control">
-                        <option value="0">python2.7.9</option>
-                        <option value="1">python3.5.0</option>
+                    <select id="env" name="env" class="form-control">
+                        <option value="0">python2.7</option>
+                        <option value="1">python3.5</option>
                         <option value="2">go1.5</option>
                         <option value="3">nodejs4</option>
                         <option value="4">java8</option>
                         <option value="5">static</option>
+                        <option value="6">php5.6</option>
                     </select>
                   </div>
                   <div class="form-group">
                     <label for="app_host">应用域名</label>
-                    <input type="text" class="form-control" id="app_host" placeholder="请输入应用域名">
+                    <input type="text" class="form-control" id="app_host" name="app_host" placeholder="请输入应用域名" required>
                   </div>
                   <div class="form-group">
                     <label for="app_port">应用端口</label>
-                    <input type="number" class="form-control" id="app_port" placeholder="请输入应用端口">
+                    <input type="number" class="form-control" id="app_port" name="app_port" placeholder="请输入应用端口" required>
                   </div>
                   <div class="form-group">
                     <label for="code_address">代码地址</label>
-                    <input type="text" class="form-control" id="code_address" placeholder="请输入代码地址">
+                    <input type="text" class="form-control" id="code_address" name="code_address" placeholder="请输入代码地址" required>
                   </div>
+                  <input type="submit" id="add-app-submit" style="display:none;">
                 </form>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消添加</button>
-                <button type="button" class="btn btn-primary">添加</button>
+                <button type="button" onclick="addApp();" class="btn btn-primary">添加</button>
               </div>
             </div>
           </div>
         </div>
 
+        <script id="t" type="text/html">
+            {{ each list as obj }}
+            <div class="panel panel-success">
+              <div class="panel-heading">{{obj.title}}</div>
+              <div class="panel-body">
+                <p>应用描述：{{obj.description}}</p>
+                <p>
+                    应用最小容器数量：<b>{{obj.min_container_number}}</b>&nbsp;&nbsp;&nbsp;
+                    应用最大容器数量：<b>{{obj.max_container_number}}</b>&nbsp;&nbsp;&nbsp;
+                    应用当前容器数量：<b>{{obj.now_container_number}}</b>&nbsp;&nbsp;&nbsp;
+                </p>
+                <p>容器最大内存：{{obj.memory}}M</p>
+                  <p>代码地址：{{obj.code_address}}</p>
+                <p>应用环境：{{obj.env}}</p>
+                <p>
+                    <a href="http://{{obj.app_host}}:{{obj.app_port}}/" class="btn btn-info" target="_blank">打开应用</a>
+                    <button type="button" class="btn btn-info">重新部署应用</button>
+                    <button type="button" class="btn btn-info">编辑应用</button>
+                    <a href="/user/deleteApp/{{obj.id}}" class="btn btn-danger">删除应用</a>
+                </p>
+              </div>
+            </div>
+            {{/each}}
+        </script>
+
         <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="/static/js/template.js"></script>
+        <script src="/static/js/user.js"></script>
     </body>
 </html>

@@ -8,3 +8,18 @@ create table if not exists container(
     code_address varchar(255) not null,
     create_time datetime not null
 );
+
+create table if not exists app(
+    id INTEGER  PRIMARY KEY AUTOINCREMENT ,
+    user_id int(11) not null ,
+    title varchar(20) not null ,
+    description varchar(200) not null ,
+    memory int(11) not null ,
+    env varchar(20) not null ,
+    code_address varchar(255) not null ,
+    app_host varchar(200) not null ,
+    app_port int(11) not null ,
+    min_container_number int(11) not null ,
+    max_container_number int(11) not null ,
+    create_time datetime not null
+ );
