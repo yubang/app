@@ -92,8 +92,50 @@
           </div>
         </div>
 
+        <!--修改应用窗口-->
+        <div class="modal fade" id="updateAppDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="update-myModalLabel">修改应用</h4>
+              </div>
+              <div class="modal-body">
+                <form action="/user/updateApp" method="post">
+                  <div class="form-group">
+                    <label for="update-title">应用名称</label>
+                    <input type="text" class="form-control" id="update-title" name="title" placeholder="请输入应用标题" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="update-description">应用描述</label>
+                    <textarea rows="5" class="form-control" id="update-description" name="description" placeholder="请输入应用描述" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="update-min_number">最小容器数量（<b>1</b>）</label>
+                    <input type="range" class="form-control" onchange="changeValue(this, 'update-min_number');" id="update-min_number" name="min_number" min="0" max="5" value="1">
+                  </div>
+                  <div class="form-group">
+                    <label for="update-max_number">最大容器数量（<b>5</b>）</label>
+                    <input type="range" class="form-control" onchange="changeValue(this, 'update-max_number');" id="update-max_number" name="max_number" min="0" max="5" value="5">
+                  </div>
+                  <div class="form-group">
+                    <label for="update-memory">容器内存（<b>128</b>M）</label>
+                    <input type="range" class="form-control" onchange="changeValue(this, 'update-memory');" id="update-memory" name="memory" min="64" max="1024" value="128" step="64">
+                  </div>
+                  <input type="hidden" name="app_id" value="">
+                  <input type="submit" id="update-app-submit" style="display:none;">
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消修改</button>
+                <button type="button" onclick="updateApp();" class="btn btn-primary">修改</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <script id="t" type="text/html">
-            {{ each list as obj }}
+            {{ each list as obj index }}
             <div class="panel panel-success">
               <div class="panel-heading">{{obj.title}}</div>
               <div class="panel-body">
@@ -109,7 +151,7 @@
                 <p>
                     <a href="http://{{obj.app_host}}:{{obj.app_port}}/" class="btn btn-info" target="_blank">打开应用</a>
                     <button type="button" class="btn btn-info">重新部署应用</button>
-                    <button type="button" class="btn btn-info">编辑应用</button>
+                    <button type="button" class="btn btn-info" onclick="showUpdateDiv({{index}});">编辑应用</button>
                     <a href="/user/deleteApp/{{obj.id}}" class="btn btn-danger">删除应用</a>
                 </p>
               </div>

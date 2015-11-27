@@ -104,3 +104,30 @@ def delete_app(app_id):
     dao.execute()
 
     return redirect("/user")
+
+
+@user_app.post("/updateApp")
+def update_app():
+    """
+    更新应用信息
+    :return:
+    """
+
+    user_id = get_login_user_id()
+
+    id = request.forms.app_id
+    title = request.forms.title
+    description = request.forms.description
+    min_number = request.forms.min_number
+    max_number = request.forms.max_number
+    memory = request.forms.memory
+
+    if user_id == 0:
+        return abort(403, '未登录！')
+
+    dao = AppModel.update(title=title, description=description, min_container_number=min_number,
+                          max_container_number=max_number, memory=memory).where(AppModel.id == id,
+                                                                                AppModel.user_id == user_id)
+    dao.execute()
+
+    return redirect("/user")
