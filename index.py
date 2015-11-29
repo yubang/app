@@ -4,6 +4,7 @@
 from bottle import run, static_file, Bottle
 from plug.container import container_app
 from plug.user import user_app
+from plug.admin import admin_app
 from model.base import db
 import os
 
@@ -11,6 +12,8 @@ import os
 app = Bottle()
 app.mount("/container", container_app)
 app.mount("/user", user_app)
+app.mount("/admin", admin_app)
+
 
 @app.route("/")
 def index():

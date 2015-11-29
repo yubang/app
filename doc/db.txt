@@ -27,3 +27,13 @@ create table if not exists app(
     primary key(id)
 );
 
+create table if not exists user(
+    id int(11) auto_increment comment '主键',
+    username varchar(20) not null comment '用户名',
+    password char(32) not null comment '密码',
+    nickname varchar(20) not null comment '用户昵称',
+    status tinyint(1) not null comment '0为可以登录，1为账号冻结，2为被删除',
+    create_time datetime not null comment '创建时间',
+    primary key(id)
+);
+

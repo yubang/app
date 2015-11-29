@@ -23,3 +23,12 @@ create table if not exists app(
     max_container_number int(11) not null ,
     create_time datetime not null
  );
+
+ create table if not exists user(
+    id INTEGER  PRIMARY KEY AUTOINCREMENT ,
+    username varchar(20) not null ,
+    password char(32) not null,
+    nickname varchar(20) not null,
+    status tinyint(1) not null,
+    create_time datetime not null
+);

@@ -42,7 +42,6 @@ def docker_get_message(docker_command):
     try:
         return 0, __socket_to_docker(docker_command)
     except Exception:
-        raise
         return -1, None
 
 
