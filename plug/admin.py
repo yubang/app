@@ -96,3 +96,29 @@ def delete_user(user_id):
     dao.execute()
 
     return redirect("/admin/user")
+
+
+@admin_app.post("/updateUser")
+def update_user():
+    """
+    修改用户信息
+    :return:
+    """
+    user_id = request.forms.user_id
+    username = request.forms.username
+    password = request.forms.password
+    nickname = request.forms.nickname
+    status = request.forms.status
+
+    # 判断是否需要修改密码
+    if password == '':
+        query = UserModel.update(username=username, nickname=nickname, status=status).where(UserModel.id == user_id)
+    else:
+        # 加密密码
+        password = hashlib.md5(password.encode("UTF-8")).hexdigest()
+        query = UserModel.update(username=username, nickname=nickname, status=status, password=password).where(UserModel.id == user_id)
+
+    if query.execute():
+        return {"code": 0}
+
+    return {"code": -1}

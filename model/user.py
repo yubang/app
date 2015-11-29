@@ -31,7 +31,6 @@ class UserModel(BaseModel):
         r = dict()
         r['id'] = user_obj.id
         r['username'] = user_obj.username
-        r['password'] = user_obj.password
         r['status'] = user_obj.status
         r['nickname'] = user_obj.nickname
         r['create_time'] = user_obj.create_time.strftime("%Y-%m-%d %H:%M:%S")

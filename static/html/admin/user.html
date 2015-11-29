@@ -15,11 +15,11 @@
               <a class="navbar-brand" href="javascript:void();">
                 paas管理员面板
               </a>
-              <a class="btn btn-info" href="javascript:void();">
+              <a class="btn btn-info" href="/admin/server">
                 容器服务器配置
               </a>
                 &nbsp;
-              <a class="btn btn-info" href="javascript:void();">
+              <a class="btn btn-info" href="/admin/user">
                 用户管理
               </a>
 
@@ -72,6 +72,44 @@
           </div>
         </div>
 
+        <!--修改用户-->
+        <div class="modal fade" id="updateUserDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="update">编辑用户</h4>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="user_id" value="">
+                <div class="form-group">
+                    <label for="update-username">用户名</label>
+                    <input type="text" class="form-control" id="update-username" name="username" placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-nickname">昵称</label>
+                    <input type="text" class="form-control" id="update-nickname" name="nickname" placeholder="请输入昵称" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-password">密码</label>
+                    <input type="password" class="form-control" id="update-password" name="password" placeholder="请输入密码" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-status">状态</label>
+                    <select id="update-status" class="form-control">
+                        <option value="0">启用</option>
+                        <option value="1">禁用</option>
+                    </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="updateUser();">修改用户</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <script id="t" type="text/html">
 
             <table class="table table-bordered table-hover">
@@ -98,7 +136,7 @@
                             </td>
                             <td>{{ obj.create_time }}</td>
                             <td>
-                                <a href="javascript:editUser({{obj.id}});">编辑</a>
+                                <a href="javascript:editUser({{index}});">编辑</a>
                                 <a href="/admin/deleteUser/{{obj.id}}">删除</a>
                             </td>
                         </tr>
