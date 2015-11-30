@@ -49,3 +49,15 @@ create table if not exists container_server(
     create_time datetime not null comment '创建时间',
     primaey key(id)
 );
+
+
+create table if not exists code(
+    id int(11) auto_increment comment '主键',
+    user_id int(11) not null comment '用户id',
+    title varchar(20) not null comment '说明',
+    token char(32) not null comment '下载凭证',
+    warehouse char(32) not null comment '仓库名字',
+    status tinyint(1) not null comment '0为启用，1为禁用，2为删除',
+    create_time datetime not null comment '创建时间',
+    primary key(id)
+);
