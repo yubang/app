@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>容器管理</title>
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/css/admin.css">
+    </head>
+    <body>
+
+        <!--导航-->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="javascript:void();">
+                paas管理员面板
+              </a>
+              <a class="btn btn-info" href="/admin/server">
+                容器服务器配置
+              </a>
+                &nbsp;
+              <a class="btn btn-info" href="/admin/user">
+                用户管理
+              </a>
+
+            </div>
+          </div>
+        </nav>
+
+        <div class="main-div">
+
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addUserDiv">添加容器服务器</button>
+
+        </div>
+
+        <div class="main-div" id="content"></div>
+
+        <!--添加用户-->
+        <div class="modal fade" id="addUserDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">添加容器服务器</h4>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                    <label for="title">说明</label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="请输入说明" required>
+                </div>
+                <div class="form-group">
+                    <label for="server_host">服务器域名</label>
+                    <input type="text" class="form-control" id="server_host" name="server_host" placeholder="请输入服务器域名" required>
+                </div>
+                <div class="form-group">
+                    <label for="server_port">服务器端口</label>
+                    <input type="number" class="form-control" id="server_port" name="server_port" placeholder="请输入服务器端口" required>
+                </div>
+                <div class="form-group">
+                    <label for="max_memory">服务器最大分配内存</label>
+                    <input type="number" class="form-control" id="max_memory" name="max_memory" placeholder="请输入服务器最大可分配内存" required>
+                </div>
+                <div class="form-group">
+                    <label for="max_container_number">服务器最大容器数量</label>
+                    <input type="number" class="form-control" id="max_container_number" name="max_container_number" placeholder="请输入服务器最大容器数量" required>
+                </div>
+                <div class="form-group">
+                    <label for="sort">优先级</label>
+                    <input type="number" class="form-control" id="sort" name="sort" placeholder="请输入优先级" required>
+                </div>
+                <div class="form-group">
+                    <label for="status">状态</label>
+                    <select id="status" class="form-control">
+                        <option value="0">启用</option>
+                        <option value="1">禁用</option>
+                    </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="addServer();">添加容器服务器</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--修改用户-->
+        <div class="modal fade" id="updateUserDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="update">编辑用户</h4>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="user_id" value="">
+                <div class="form-group">
+                    <label for="update-username">用户名</label>
+                    <input type="text" class="form-control" id="update-username" name="username" placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-nickname">昵称</label>
+                    <input type="text" class="form-control" id="update-nickname" name="nickname" placeholder="请输入昵称" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-password">密码</label>
+                    <input type="password" class="form-control" id="update-password" name="password" placeholder="请输入密码" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-status">状态</label>
+                    <select id="update-status" class="form-control">
+                        <option value="0">启用</option>
+                        <option value="1">禁用</option>
+                    </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="updateUser();">修改用户</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script id="t" type="text/html">
+
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>说明</th>
+                        <th>服务器域名</th>
+                        <th>服务器端口</th>
+                        <th>状态</th>
+                        <th>优先级</th>
+                        <th>最大容器数量</th>
+                        <th>大大内存分配</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ each lists as obj index}}
+                        <tr>
+                            <td>说明</td>
+                            <td>服务器域名</td>
+                            <td>服务器端口</td>
+                            <td>状态</td>
+                            <td>优先级</td>
+                            <td>最大容器数量</td>
+                            <td>大大内存分配</td>
+                            <td>操作</td>
+                        </tr>
+                    {{ /each }}
+                </tbody>
+            </table>
+
+        </script>
+
+        <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="/static/js/template.js"></script>
+        <script src="/static/js/admin.js"></script>
+        <script>
+            getServers();
+        </script>
+    </body>
+</html>

@@ -9,6 +9,7 @@
 
 from bottle import Bottle, static_file, request, response, redirect
 from model.user import UserModel
+from model.container_server import ContainerServerModel
 import os
 import datetime
 import hashlib
@@ -122,3 +123,48 @@ def update_user():
         return {"code": 0}
 
     return {"code": -1}
+
+
+@admin_app.get("/server")
+def server():
+    """
+    获取容器服务器配置
+    :return:
+    """
+    return __output_html("server")
+
+
+@admin_app.get("/getServers")
+def get_servers():
+    """
+    获取所有的容器服务器
+    :return:
+    """
+    lists = ContainerServerModel.select().where(ContainerServerModel.status != 2).order_by(ContainerServerModel.sort.desc(), ContainerServerModel.id.desc())
+    objs = list(map(ContainerServerModel.get_dict_from_obj, lists))
+    
+    return json.dumps(objs)
+
+
+@admin_app.post("/addServer")
+def add_server():
+    """
+    添加容器服务器
+    :return:
+    """
+    title = request.forms.title
+    server_host = request.forms.server_host
+    server_port = request.forms.server_port
+    status = request.forms.status
+    max_container_number = request.forms.max_container_number
+    max_memory = request.forms.max_memory
+    sort = request.forms.sort
+    create_time = datetime.datetime.now()
+
+    dao = ContainerServerModel(server_host=server_host, server_port=server_port, status=status, title=title,
+                               max_container_number=max_container_number, max_memory=max_memory, sort=sort, create_time=create_time)
+
+    if not dao.save():
+        return {"code": -1}
+
+    return {"code": 0}

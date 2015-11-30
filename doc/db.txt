@@ -37,3 +37,15 @@ create table if not exists user(
     primary key(id)
 );
 
+create table if not exists container_server(
+    id int(11) auto_increment comment '主键',
+    title varchar(50) not null comment '说明',
+    server_host varchar(200) not null comment '容器服务器域名',
+    server_port int(11) not null comment '容器服务器端口',
+    status tinyint(1) not null comment '0为启用，1为禁用，2为删除',
+    max_container_number int(11) not null comment '允许的最大容器数量',
+    max_memory int(11) not null comment '最大的内存分配',
+    sort tinyint(1) not null comment '优先级',
+    create_time datetime not null comment '创建时间',
+    primaey key(id)
+);

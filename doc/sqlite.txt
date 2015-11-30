@@ -32,3 +32,15 @@ create table if not exists app(
     status tinyint(1) not null,
     create_time datetime not null
 );
+
+create table if not exists container_server(
+    id INTEGER  PRIMARY KEY AUTOINCREMENT ,
+    title varchar(50) not null,
+    server_host varchar(200) not null,
+    server_port int(11) not null,
+    status tinyint(1) not null,
+    max_container_number int(11),
+    max_memory int(11) not null,
+    sort tinyint(1) not null,
+    create_time datetime not null
+);
