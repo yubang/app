@@ -6,7 +6,7 @@
 @author: yubang
 """
 
-from bottle import Bottle, static_file, response, request, redirect
+from bottle import Bottle, static_file, response, request, redirect, abort
 from model.code import CodeModel
 import os
 import json
@@ -112,3 +112,21 @@ def update_code():
         return {"code": -1}
 
     return {"code": 0}
+
+
+@code_app.get("/download/:warehouse#[0-9a-z]{32}#/:token#[0-9a-z]{32}#")
+def download(warehouse, token):
+    """
+    下载代码
+    :param warehouse: 仓库名称
+    :param token: 下载凭证
+    :return:
+    """
+
+    try:
+        obj = CodeModel.select().where(CodeModel.warehouse == warehouse, CodeModel.token == token, CodeModel.status == 0).get()
+    except Exception:
+        return abort(404)
+
+    fp_path = os.path.dirname(os.path.realpath(__file__)) + "/data/code"
+    return static_file(str(obj.id)+".zip", root=fp_path, download=True)
