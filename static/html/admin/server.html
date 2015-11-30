@@ -140,14 +140,23 @@
                 <tbody>
                     {{ each lists as obj index}}
                         <tr>
-                            <td>说明</td>
-                            <td>服务器域名</td>
-                            <td>服务器端口</td>
-                            <td>状态</td>
-                            <td>优先级</td>
-                            <td>最大容器数量</td>
-                            <td>大大内存分配</td>
-                            <td>操作</td>
+                            <td>{{obj.title}}</td>
+                            <td>{{obj.server_host}}</td>
+                            <td>{{obj.server_port}}</td>
+                            <td>
+                                {{ if obj.status == 0 }}
+                                    启用
+                                {{ else }}
+                                    禁用
+                                {{ /if }}
+                            </td>
+                            <td>{{obj.sort}}</td>
+                            <td>{{obj.max_container_number}}</td>
+                            <td>{{obj.max_memory}}M</td>
+                            <td>
+                                <a href="">编辑</a>
+                                <a href="/admin/deleteServer/{{obj.id}}">删除</a>
+                            </td>
                         </tr>
                     {{ /each }}
                 </tbody>

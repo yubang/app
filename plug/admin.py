@@ -142,7 +142,7 @@ def get_servers():
     """
     lists = ContainerServerModel.select().where(ContainerServerModel.status != 2).order_by(ContainerServerModel.sort.desc(), ContainerServerModel.id.desc())
     objs = list(map(ContainerServerModel.get_dict_from_obj, lists))
-    
+
     return json.dumps(objs)
 
 
@@ -168,3 +168,17 @@ def add_server():
         return {"code": -1}
 
     return {"code": 0}
+
+
+@admin_app.get("/deleteServer/:server_id#\d+#")
+def delete_server(server_id):
+    """
+    删除一个服务器
+    :param server_id: 服务器id
+    :return:
+    """
+
+    dao = ContainerServerModel.update(status=2).where(ContainerServerModel.id == server_id)
+    dao.execute()
+
+    return redirect("/admin/server")
