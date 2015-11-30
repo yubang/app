@@ -70,10 +70,10 @@ function updateUser(){
 
 }
 
-
+var servers = null;
 function getServers(){
     $.get('/admin/getServers', {}, function(data){
-        users = data;
+        servers = data;
         var html = template("t", {"lists": data});
         $("#content").html(html);
     }, "json").error(function(){alert('拉取服务器列表失败！');});
@@ -102,6 +102,51 @@ function addServer(){
             location.reload();
         }else{
             alert("添加失败！");
+        }
+    }, "json").error(function(){
+        alert("服务器出错！");
+    });
+
+}
+
+function editServer(index){
+    var obj = servers[index];
+    $("#update-title").val(obj.title);
+    $("#server_id").val(obj.id);
+    $("#update-server_host").val(obj.server_host);
+    $("#update-server_port").val(obj.server_port);
+    $("#update-status").val(obj.status);
+    $("#update-max_container_number").val(obj.max_container_number);
+    $("#update-max_memory").val(obj.max_memory);
+    $("#update-sort").val(obj.sort);
+    $('#updateServerDiv').modal({});
+}
+
+function updateServer(){
+    var id = $("#server_id").val();
+    var title = $("#update-title").val();
+    var server_host = $("#update-server_host").val();
+    var server_port = $("#update-server_port").val();
+    var status = $("#update-status").val();
+    var max_container_number = $("#update-max_container_number").val();
+    var max_memory = $("#update-max_memory").val();
+    var sort = $("#update-sort").val();
+
+    $.post("/admin/updateServer", {
+        "id": id,
+        "title": title,
+        "server_host": server_host,
+        "server_port": server_port,
+        "status": status,
+        "max_container_number": max_container_number,
+        "max_memory": max_memory,
+        "sort": sort
+    }, function(data){
+        if(data['code'] == 0){
+            alert("修改成功！");
+            location.reload();
+        }else{
+            alert("修改失败！");
         }
     }, "json").error(function(){
         alert("服务器出错！");

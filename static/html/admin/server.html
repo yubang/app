@@ -84,27 +84,39 @@
           </div>
         </div>
 
-        <!--修改用户-->
-        <div class="modal fade" id="updateUserDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <!--修改容器服务器-->
+        <div class="modal fade" id="updateServerDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="update">编辑用户</h4>
+                <h4 class="modal-title" id="update">编辑容器服务器</h4>
               </div>
               <div class="modal-body">
-                <input type="hidden" id="user_id" value="">
+                <input type="hidden" id="server_id" value="">
                 <div class="form-group">
-                    <label for="update-username">用户名</label>
-                    <input type="text" class="form-control" id="update-username" name="username" placeholder="请输入用户名" required>
+                    <label for="update-title">说明</label>
+                    <input type="text" class="form-control" id="update-title" name="title" placeholder="请输入说明" required>
                 </div>
                 <div class="form-group">
-                    <label for="update-nickname">昵称</label>
-                    <input type="text" class="form-control" id="update-nickname" name="nickname" placeholder="请输入昵称" required>
+                    <label for="update-server_host">服务器域名</label>
+                    <input type="text" class="form-control" id="update-server_host" name="server_host" placeholder="请输入服务器域名" required>
                 </div>
                 <div class="form-group">
-                    <label for="update-password">密码</label>
-                    <input type="password" class="form-control" id="update-password" name="password" placeholder="请输入密码" required>
+                    <label for="update-server_port">服务器端口</label>
+                    <input type="number" class="form-control" id="update-server_port" name="server_port" placeholder="请输入服务器端口" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-max_memory">服务器最大分配内存</label>
+                    <input type="number" class="form-control" id="update-max_memory" name="max_memory" placeholder="请输入服务器最大可分配内存" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-max_container_number">服务器最大容器数量</label>
+                    <input type="number" class="form-control" id="update-max_container_number" name="max_container_number" placeholder="请输入服务器最大容器数量" required>
+                </div>
+                <div class="form-group">
+                    <label for="update-sort">优先级</label>
+                    <input type="number" class="form-control" id="update-sort" name="sort" placeholder="请输入优先级" required>
                 </div>
                 <div class="form-group">
                     <label for="update-status">状态</label>
@@ -116,7 +128,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" onclick="updateUser();">修改用户</button>
+                <button type="button" class="btn btn-primary" onclick="updateServer();">修改容器服务器</button>
               </div>
             </div>
           </div>
@@ -154,7 +166,7 @@
                             <td>{{obj.max_container_number}}</td>
                             <td>{{obj.max_memory}}M</td>
                             <td>
-                                <a href="">编辑</a>
+                                <a href="javascript:editServer({{index}});">编辑</a>
                                 <a href="/admin/deleteServer/{{obj.id}}">删除</a>
                             </td>
                         </tr>

@@ -182,3 +182,25 @@ def delete_server(server_id):
     dao.execute()
 
     return redirect("/admin/server")
+
+
+@admin_app.post("/updateServer")
+def update_server():
+    """
+    更新容器服务器
+    :return:
+    """
+    id = request.forms.id
+    title = request.forms.title
+    server_host = request.forms.server_host
+    server_port = request.forms.server_port
+    status = request.forms.status
+    max_container_number = request.forms.max_container_number
+    max_memory = request.forms.max_memory
+    sort = request.forms.sort
+
+    dao = ContainerServerModel.update(title=title, server_host=server_host, server_port=server_port, status=status,
+                                      max_container_number=max_container_number, max_memory=max_memory, sort=sort).where(ContainerServerModel.id == id)
+    if not dao.execute():
+        return {"code": -1}
+    return {"code": 0}
