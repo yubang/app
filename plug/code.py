@@ -128,5 +128,22 @@ def download(warehouse, token):
     except Exception:
         return abort(404)
 
-    fp_path = os.path.dirname(os.path.realpath(__file__)) + "/data/code"
+    fp_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/data/code"
     return static_file(str(obj.id)+".zip", root=fp_path, download=True)
+
+
+@code_app.post("/uploadFile")
+def upload_zip():
+    """
+    上传文件
+    :return:
+    """
+
+    code_id = int(request.forms.code_id)
+    obj = CodeModel.select().where(CodeModel.user_id == get_login_user_id(), CodeModel.id == code_id).get()
+
+    fp = request.files['file']
+    fp_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + "/data/code/"
+    fp.save(fp_path + str(obj.id) + ".zip", overwrite=True)
+
+    return "ok"
