@@ -31,3 +31,5 @@ class StaticMiddle(object):
                 response.add_header(obj[0], obj[1])
             return response
         return None
+    def destroy(self):
+        return None

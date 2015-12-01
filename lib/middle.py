@@ -40,7 +40,11 @@ class MiddleSupport(object):
         if r:
             return self.__output(environ, start_response, r)
 
-        return self.__app(environ, start_response)
+        r = self.__app(environ, start_response)
+
+        self.__handle_plug_in_end()
+
+        return r
 
     def __output(self, environ, start_response, response):
         start_response(response.status, response.headerlist)
@@ -53,11 +57,14 @@ class MiddleSupport(object):
         """
 
         for plug in self.__middle_plug:
-            obj = plug()
-            r = obj.before_request(request, response)
+            r = plug.before_request(request, response)
             if r:
                 return r
         return None
 
+    def __handle_plug_in_end(self):
+        for plug in self.__middle_plug:
+            r = plug.destroy()
+
     def add_middle_plug(self, middle_plug):
-        self.__middle_plug.append(middle_plug)
+        self.__middle_plug.append(middle_plug())
