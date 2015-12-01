@@ -25,6 +25,7 @@ class StaticMiddle(object):
                 response.body = obj.body.encode()
             else:
                 response.body = obj.body.read()
+                obj.body.close()
 
             response.status = obj.status
             for obj in obj.headerlist:
