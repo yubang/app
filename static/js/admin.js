@@ -153,3 +153,18 @@ function updateServer(){
     });
 
 }
+
+function login(){
+    var username = $("input[name='username']").val();
+    var password = $("input[name='password']").val();
+    $.post("/admin/login", {"username": username, "password": password}, function(data){
+        if(data['code'] == 0){
+            alert("登录成功");
+            location.href="/admin/user";
+        }else{
+            alert("用户名或密码错误！");
+        }
+    }, "json").error(function(){
+        alert("服务器无法响应！");
+    });
+}

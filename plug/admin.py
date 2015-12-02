@@ -10,6 +10,7 @@
 from bottle import Bottle, static_file, request, response, redirect
 from model.user import UserModel
 from model.container_server import ContainerServerModel
+from lib.config import get_config_data
 import os
 import datetime
 import hashlib
@@ -203,4 +204,31 @@ def update_server():
                                       max_container_number=max_container_number, max_memory=max_memory, sort=sort).where(ContainerServerModel.id == id)
     if not dao.execute():
         return {"code": -1}
+    return {"code": 0}
+
+
+@admin_app.get("/account")
+def account():
+    """
+    管理员登录面板
+    :return:
+    """
+    return __output_html("account")
+
+
+@admin_app.post("/login")
+def login():
+    """
+    管理员登录
+    :return:
+    """
+    data = get_config_data()
+    username = request.forms.username
+    password = request.forms.password
+
+    if data['admin_account.username'] != username or data['admin_account.password'] != password:
+        return {"code": -1}
+
+    request.session['admin'] = datetime.datetime.now()
+
     return {"code": 0}
