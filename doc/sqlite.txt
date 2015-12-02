@@ -42,7 +42,8 @@ create table if not exists container_server(
     max_container_number int(11),
     max_memory int(11) not null,
     sort tinyint(1) not null,
-    create_time datetime not null
+    create_time datetime not null,
+    unique(server_host, server_port)
 );
 
 

@@ -11,6 +11,7 @@ docker容器管理插件
 from bottle import Bottle, request
 from model.container import ContainerModel
 from lib import docker
+from lib.config import get_config_data
 import subprocess
 import datetime
 import urllib
@@ -25,7 +26,8 @@ def check_token(token):
     :param token: 登录token
     :return: boolean
     """
-    return token == '123'
+    data = get_config_data()
+    return token == data['token.token']
 
 
 def get_one_able_post():

@@ -47,7 +47,8 @@ create table if not exists container_server(
     max_memory int(11) not null comment '最大的内存分配',
     sort tinyint(1) not null comment '优先级',
     create_time datetime not null comment '创建时间',
-    primaey key(id)
+    primaey key(id),
+    unique(server_host, server_port)
 );
 
 
