@@ -11,6 +11,8 @@ from lib.middle import MiddleSupport
 from middle.static import StaticMiddle
 from middle.session import SessionMiddle
 from middle.time_middle import TimeMiddle
+from middle.power import PowerMiddle
+
 
 app = Bottle()
 
@@ -35,6 +37,7 @@ app = MiddleSupport(app)
 app.add_middle_plug(SessionMiddle)
 app.add_middle_plug(StaticMiddle)
 app.add_middle_plug(TimeMiddle)
+app.add_middle_plug(PowerMiddle)
 
 run(app=app, host="0.0.0.0", port=8000, reloader=True, debug=True)
 

@@ -9,9 +9,11 @@
 
 from bottle import Bottle, static_file, request, abort, redirect
 from model.app import AppModel
+from model.user import UserModel
 import os
 import datetime
 import json
+import hashlib
 
 user_app = Bottle()
 
@@ -33,7 +35,7 @@ def get_login_user_id():
     获取user_id，没有登录返回0
     :return: int
     """
-    return 1
+    return request.session.get('uid', 0)
 
 
 def get_image_name_from_env(env):
@@ -131,3 +133,32 @@ def update_app():
     dao.execute()
 
     return redirect("/user")
+
+
+@user_app.get("/account")
+def account():
+    """
+    账号页面
+    :return:
+    """
+    return __output_html("account")
+
+
+@user_app.post("/login")
+def login():
+    """
+    用户登录
+    :return:
+    """
+
+    username = request.forms.username
+    password = request.forms.password
+    password = hashlib.md5(password.encode("UTF-8")).hexdigest()
+
+    try:
+        user = UserModel.select().where(UserModel.username == username, UserModel.password == password, UserModel.status == 0).get()
+        request.session['uid'] = user.id
+    except:
+        return {"code": -1}
+
+    return {"code": 0}
