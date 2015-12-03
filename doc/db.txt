@@ -67,10 +67,21 @@ create table if not exists code(
 create table if not exists task_queue(
     id int(11) auto_increment comment '主键',
     user_id int(11) not null comment '命令发布者id，0为系统',
+    app_id int(11) not null comment '应用id，0为系统',
     command_code int(11) not null comment '命令码',
     command_content text not null comment '命令具体安排，json',
     callback_sql text comment '命令执行成功回调sql',
     callback_sql_error text comment '命令执行失败回调sql',
     create_time datetime not null comment '任务创建时间',
+    primary key(id)
+);
+
+
+create table if not exists app_container(
+    id int(11) auto_increment comment '主键',
+    app_id int(11) not null comment '容器所属app的id',
+    host varchar(100) not null comment '容器域名',
+    port int(11) not null comment '容器',
+    create_time datetime not null,
     primary key(id)
 );

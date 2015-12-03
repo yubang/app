@@ -61,9 +61,19 @@ create table if not exists code(
 create table if not exists task_queue(
     id INTEGER  PRIMARY KEY AUTOINCREMENT ,
     user_id int(11) not null ,
+    app_id int(11) not null ,
     command_code int(11) not null ,
     command_content text not null ,
     callback_sql text ,
     callback_sql_error text ,
+    create_time datetime not null
+);
+
+
+create table if not exists app_container(
+    id INTEGER  PRIMARY KEY AUTOINCREMENT ,
+    app_id int(11) not null,
+    host varchar(100) not null,
+    port int(11) not null,
     create_time datetime not null
 );

@@ -7,6 +7,7 @@
 
 from peewee import CharField, IntegerField, DateTimeField
 from model.base import BaseModel
+from model.app_container import AppContainModel
 
 
 class AppModel(BaseModel):
@@ -39,5 +40,5 @@ class AppModel(BaseModel):
         r['min_container_number'] = model_obj.min_container_number
         r['max_container_number'] = model_obj.max_container_number
         r['create_time'] = model_obj.create_time.strftime("%Y-%m-%d %H:%M:%S")
-        r['now_container_number'] = 0
+        r['now_container_number'] = AppContainModel.select().where(AppContainModel.app_id == model_obj.id).count()
         return r
