@@ -21,7 +21,8 @@ create table if not exists app(
     app_port int(11) not null ,
     min_container_number int(11) not null ,
     max_container_number int(11) not null ,
-    create_time datetime not null
+    create_time datetime not null,
+    unique(app_host, app_port)
  );
 
  create table if not exists user(
@@ -42,8 +43,7 @@ create table if not exists container_server(
     max_container_number int(11),
     max_memory int(11) not null,
     sort tinyint(1) not null,
-    create_time datetime not null,
-    unique(server_host, server_port)
+    create_time datetime not null
 );
 
 
@@ -54,5 +54,16 @@ create table if not exists code(
     token char(32) not null,
     warehouse char(32) not null,
     status tinyint(1) not null,
+    create_time datetime not null
+);
+
+
+create table if not exists task_queue(
+    id INTEGER  PRIMARY KEY AUTOINCREMENT ,
+    user_id int(11) not null ,
+    command_code int(11) not null ,
+    command_content text not null ,
+    callback_sql text ,
+    callback_sql_error text ,
     create_time datetime not null
 );

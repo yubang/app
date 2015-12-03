@@ -34,11 +34,13 @@ def get_login_user_id():
     获取登录用户id，未登录返回0
     :return: int
     """
-    return 1
+    return request.session.get('uid', 0)
 
 
 @code_app.get("/")
 def index():
+    if get_login_user_id() == 0:
+        return redirect("/user/account")
     return __output_html("index")
 
 
@@ -48,6 +50,10 @@ def get_all_codes():
     获取所有代码仓库
     :return:
     """
+
+    if get_login_user_id() == 0:
+        return redirect("/user/account")
+
     user_id = get_login_user_id()
     lists = CodeModel.select().where(CodeModel.status != 2, CodeModel.user_id == user_id)
     objs = list(map(CodeModel.get_dict_from_obj, lists))
@@ -62,6 +68,9 @@ def add_code():
     添加代码仓库
     :return:
     """
+
+    if get_login_user_id() == 0:
+        return redirect("/user/account")
 
     title = request.forms.title
     status = request.forms.status
@@ -87,6 +96,9 @@ def delete_code(code_id):
     :return:
     """
 
+    if get_login_user_id() == 0:
+        return redirect("/user/account")
+
     user_id = get_login_user_id()
 
     dao = CodeModel.update(status=2).where(CodeModel.user_id == user_id, CodeModel.id == code_id)
@@ -98,9 +110,12 @@ def delete_code(code_id):
 @code_app.post("/updateCode")
 def update_code():
     """
-    跟新代码仓库
+    更新代码仓库
     :return:
     """
+
+    if get_login_user_id() == 0:
+        return redirect("/user/account")
 
     id = request.forms.id
     user_id = get_login_user_id()
@@ -138,6 +153,9 @@ def upload_zip():
     上传文件
     :return:
     """
+
+    if get_login_user_id() == 0:
+        return redirect("/user/account")
 
     code_id = int(request.forms.code_id)
     obj = CodeModel.select().where(CodeModel.user_id == get_login_user_id(), CodeModel.id == code_id).get()
