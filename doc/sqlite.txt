@@ -73,7 +73,9 @@ create table if not exists task_queue(
 create table if not exists app_container(
     id INTEGER  PRIMARY KEY AUTOINCREMENT ,
     app_id int(11) not null,
+    api_url varchar(100) not null,
     host varchar(100) not null,
     port int(11) not null,
+    container_id not null,
     create_time datetime not null
 );

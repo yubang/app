@@ -80,8 +80,10 @@ create table if not exists task_queue(
 create table if not exists app_container(
     id int(11) auto_increment comment '主键',
     app_id int(11) not null comment '容器所属app的id',
+    api_url varchar(100) not null comment 'API服务器',
     host varchar(100) not null comment '容器域名',
     port int(11) not null comment '容器',
+    container_id not null comment '容器id',
     create_time datetime not null,
     primary key(id)
 );

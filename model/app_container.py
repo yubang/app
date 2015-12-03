@@ -18,4 +18,6 @@ class AppContainModel(BaseModel):
     app_id = IntegerField()
     host = CharField(max_length=100)
     port = IntegerField()
+    container_id = CharField(max_length=100)
+    api_url = CharField(max_length=100)
     create_time = DateTimeField()
