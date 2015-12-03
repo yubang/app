@@ -10,7 +10,10 @@
 from model.app import AppModel
 from model.app_container import AppContainModel
 from model.task_queue import TaskQueueModel
+from lib.config import get_config_data
 import datetime
+import requests
+import json
 
 
 def init():
@@ -19,21 +22,71 @@ def init():
         handle_app(app)
 
 
+def request_api(url, data):
+    d = get_config_data()
+    data['token'] = d['token.token']
+    return requests.post(url, data)
+
+
+def get_app_avg_message(app_id):
+    """
+    获取应用平均状态
+    :return: cpu，内存
+    """
+    cpu = 0
+    memory = 0
+    count = AppContainModel.select().where(AppContainModel.app_id == app_id).count()
+    objs = AppContainModel.select().where(AppContainModel.app_id == app_id)
+    for obj in objs:
+        r = request_api(obj.api_url + "stats", {"containerId": obj.container_id})
+        if r.status_code != 200:
+            cpu += 100
+            memory += 100
+            continue
+        d = json.loads(r.text)
+        if d['code'] != 0:
+            cpu += 100
+            memory += 100
+            continue
+
+        cpu += d['result']['cpu']
+
+        memory += d['result']['memory']
+
+    if count == 0:
+        return 100, 100
+
+    cpu = cpu / count
+    cpu = float("%.2f" % cpu)
+    memory = memory / count
+    memory = float("%.2f" % memory)
+
+    return cpu, memory
+
+
 def handle_app(app):
     container_nums = AppContainModel.select().where(AppContainModel.app_id == app.id).count()
 
+    cpu, memory = get_app_avg_message(app.id)
+
     # 判断是否需要增加容器
-    if container_nums == 0:
+    if container_nums < app.min_container_number:
         add_sign = 1
     else:
-        add_sign = 0
+        if cpu > 5.0 and memory > 95.5 and container_nums < app.max_container_number:
+            add_sign = 1
+        else:
+            add_sign = 0
 
     # 判断是否需要减少容器
     if container_nums > app.max_container_number:
         add_sign = 0
         reduce_sign = -1
     else:
-        reduce_sign = 0
+        if cpu < 1.5 and memory < 90 and container_nums > app.min_container_number:
+            reduce_sign = -1
+        else:
+            reduce_sign = 0
 
     sign = add_sign + reduce_sign
     if sign == 0:
