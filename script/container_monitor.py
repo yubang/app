@@ -17,12 +17,22 @@ import json
 
 
 def init():
+    """
+    入口函数
+    :return:
+    """
     apps = AppModel.select()
     for app in apps:
         handle_app(app)
 
 
 def request_api(url, data):
+    """
+    请求容器API
+    :param url: 容器API地址
+    :param data: post参数
+    :return: response对象
+    """
     d = get_config_data()
     data['token'] = d['token.token']
     return requests.post(url, data)
@@ -65,6 +75,11 @@ def get_app_avg_message(app_id):
 
 
 def handle_app(app):
+    """
+    处理每一个APP
+    :param app: app对象
+    :return:
+    """
     container_nums = AppContainModel.select().where(AppContainModel.app_id == app.id).count()
 
     cpu, memory = get_app_avg_message(app.id)

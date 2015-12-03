@@ -22,12 +22,22 @@ import subprocess
 
 
 def init():
+    """
+    入口函数
+    :return:
+    """
     tasks = TaskQueueModel.select().limit(1)
     for task in tasks:
         handle_task(task)
 
 
 def request_api(url, data):
+    """
+    请求容器API
+    :param url: 容器API地址
+    :param data: post参数
+    :return: response对象
+    """
     d = get_config_data()
     data['token'] = d['token.token']
     return requests.post(url, data)
@@ -160,6 +170,11 @@ def build_nginx_config(app_id):
 
 
 def handle_task(task):
+    """
+    处理每一个任务
+    :param task: 任务对象
+    :return:
+    """
     if task.command_code == 1:
         # 添加一个容器
         r, obj = add_one_container(task)
