@@ -150,7 +150,7 @@
                 <p>应用环境：{{obj.env}}</p>
                 <p>
                     <a href="http://{{obj.app_host}}:{{obj.app_port}}/" class="btn btn-info" target="_blank">打开应用</a>
-                    <button type="button" class="btn btn-info">重新部署应用</button>
+                    <button type="button" class="btn btn-info" onclick="deployment({{obj.id}});">重新部署应用</button>
                     <button type="button" class="btn btn-info" onclick="showUpdateDiv({{index}});">编辑应用</button>
                     <a href="/user/deleteApp/{{obj.id}}" class="btn btn-danger">删除应用</a>
                 </p>

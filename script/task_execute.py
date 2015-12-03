@@ -17,6 +17,8 @@ import requests
 import urllib
 import json
 import datetime
+import os
+import subprocess
 
 
 def init():
@@ -108,6 +110,55 @@ def remove_some_container(task, number):
     return None
 
 
+def build_nginx_config(app_id):
+    """
+    生成应用nginx配置文件
+    :param app_id:
+    :return:
+    """
+    nginx_str = """
+
+    upstream site%d {
+        %s
+    }
+
+    server{
+        listen %s:%d;
+        index index.html index.htm;
+        location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+            proxy_pass http://site%d;
+        }
+    }
+    """
+
+    try:
+        app = AppModel.select().where(AppModel.id == app_id).get()
+    except:
+        return False
+
+    app_lists = ""
+    containers = AppContainModel.select().where(AppContainModel.app_id == app_id)
+    for obj in containers:
+        app_lists = app_lists + ("server %s:%d;\n" % (obj.host, obj.port))
+
+    config_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    config_path = config_path + "/data/nginx_config/" + str(app_id) + ".conf"
+    if os.path.exists(config_path):
+        os.remove(config_path)
+
+    if app_lists == "":
+        return False
+
+    config_str = nginx_str % (app_id, app_lists, app.app_host, app.app_port, app_id)
+    fp = open(config_path, "w")
+    fp.write(config_str)
+    fp.close()
+
+    subprocess.getstatusoutput("nginx -s reload")
+
+
 def handle_task(task):
     if task.command_code == 1:
         # 添加一个容器
@@ -134,4 +185,10 @@ def handle_task(task):
     else:
         # 未定义任务码
         login_log("error", "未定义任务码：%d，触发应用id：%d" % (task.command_code, task.app_id))
+
+    build_nginx_config(task.app_id)
+
+    # 删除任务队列
+    dao = TaskQueueModel.delete().where(TaskQueueModel.id == task.id)
+    dao.execute()
 

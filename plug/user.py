@@ -10,6 +10,7 @@
 from bottle import Bottle, static_file, request, abort, redirect
 from model.app import AppModel
 from model.user import UserModel
+from model.task_queue import TaskQueueModel
 import os
 import datetime
 import json
@@ -160,5 +161,26 @@ def login():
         request.session['uid'] = user.id
     except:
         return {"code": -1}
+
+    return {"code": 0}
+
+
+@user_app.post("/deploymentApp")
+def deployment_app():
+    """
+    重新部署应用
+    :return:
+    """
+
+    user_id = get_login_user_id()
+    app_id = request.forms.app_id
+    # 防止越权操作
+    AppModel.select().where(AppModel.user_id == user_id).get()
+
+    if TaskQueueModel.select().where(TaskQueueModel.app_id == app_id, TaskQueueModel.command_code == 3).count():
+        return {"code": -1}
+
+    obj = TaskQueueModel(app_id=app_id, user_id=user_id, command_code=3, command_content='{}', create_time=datetime.datetime.now())
+    obj.save()
 
     return {"code": 0}

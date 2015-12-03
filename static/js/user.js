@@ -46,3 +46,14 @@ function login(){
     });
 }
 
+function deployment(app_id){
+    $.post("/user/deploymentApp", {"app_id": app_id}, function(data){
+        if(data['code'] == 0){
+            alert("发布应用成功，可能有数分钟的延迟！");
+        }else{
+            alert("你已经重新发布应用了，请耐心等候！");
+        }
+    }).error(function(){
+        alert("服务器无法响应！");
+    });
+}
