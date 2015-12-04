@@ -1,4 +1,3 @@
-// mysql
 create table if not exists container(
     id int(11) auto_increment comment '主键',
     container_id varchar(100) not null comment '容器id',
@@ -8,7 +7,7 @@ create table if not exists container(
     code_address varchar(255) not null comment '代码地址',
     create_time datetime not null comment '创建时间',
     primary key(id)
-);
+)comment = '容器记录表' DEFAULT CHARSET=utf8;
 
 
 create table if not exists app(
@@ -26,7 +25,7 @@ create table if not exists app(
     create_time datetime not null comment '应用创建时间',
     primary key(id),
     unique(app_host, app_port)
-);
+)comment = '应用表' DEFAULT CHARSET=utf8;
 
 create table if not exists user(
     id int(11) auto_increment comment '主键',
@@ -36,7 +35,7 @@ create table if not exists user(
     status tinyint(1) not null comment '0为可以登录，1为账号冻结，2为被删除',
     create_time datetime not null comment '创建时间',
     primary key(id)
-);
+)comment = '用户表' DEFAULT CHARSET=utf8;
 
 create table if not exists container_server(
     id int(11) auto_increment comment '主键',
@@ -48,8 +47,8 @@ create table if not exists container_server(
     max_memory int(11) not null comment '最大的内存分配',
     sort tinyint(1) not null comment '优先级',
     create_time datetime not null comment '创建时间',
-    primaey key(id)
-);
+    primary key(id)
+)comment = '容器服务器记录表' DEFAULT CHARSET=utf8;
 
 
 create table if not exists code(
@@ -61,7 +60,7 @@ create table if not exists code(
     status tinyint(1) not null comment '0为启用，1为禁用，2为删除',
     create_time datetime not null comment '创建时间',
     primary key(id)
-);
+)comment = '代码仓库表' DEFAULT CHARSET=utf8;
 
 
 create table if not exists task_queue(
@@ -74,7 +73,7 @@ create table if not exists task_queue(
     callback_sql_error text comment '命令执行失败回调sql',
     create_time datetime not null comment '任务创建时间',
     primary key(id)
-);
+)comment = '任务队列表' DEFAULT CHARSET=utf8;
 
 
 create table if not exists app_container(
@@ -83,7 +82,7 @@ create table if not exists app_container(
     api_url varchar(100) not null comment 'API服务器',
     host varchar(100) not null comment '容器域名',
     port int(11) not null comment '容器',
-    container_id not null comment '容器id',
-    create_time datetime not null,
+    container_id varchar(20) not null comment '容器id',
+    create_time datetime not null comment '创建时间',
     primary key(id)
-);
+)comment = '应用与容器映射表' DEFAULT CHARSET=utf8;

@@ -7,7 +7,7 @@
 """
 
 from peewee import CharField, IntegerField, DateTimeField
-from model.base import BaseModel, db
+from model.base import BaseModel, db, sqlite_db
 
 
 class ContainerModel(BaseModel):
@@ -15,6 +15,7 @@ class ContainerModel(BaseModel):
     容器表模型
     """
     class Meta:
+        database = sqlite_db
         db_table = "container"
 
     @classmethod

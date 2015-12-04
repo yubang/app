@@ -1,7 +1,7 @@
 # coding:UTF-8
 
 
-from bottle import run, static_file, Bottle, request
+from bottle import run, Bottle
 from plug.container import container_app
 from plug.user import user_app
 from plug.admin import admin_app
@@ -12,7 +12,7 @@ from middle.static import StaticMiddle
 from middle.session import SessionMiddle
 from middle.time_middle import TimeMiddle
 from middle.power import PowerMiddle
-
+from model.base import start_connect, close_connect
 
 app = Bottle()
 
@@ -24,13 +24,12 @@ app.mount("/code", code_app)
 
 @app.hook("before_request")
 def __db_connect():
-    db.connect()
+    start_connect()
 
 
 @app.hook("after_request")
 def __db_close():
-    if not db.is_closed():
-        db.close()
+    close_connect()
 
 
 app = MiddleSupport(app)

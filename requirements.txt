@@ -1,3 +1,4 @@
+PyMySQL==0.6.7
 bottle==0.12.9
 peewee==2.6.4
 requests==2.8.1
