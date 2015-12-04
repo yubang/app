@@ -3,17 +3,47 @@
     <head>
         <meta charset="UTF-8">
         <title>应用发布平台</title>
+        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+        <style>
+            .background-pic{
+              padding: 0;
+              height: 100%;
+              width: 100%;
+              position: absolute;
+              left: 0;
+              top: 0;
+              background-image:url("/static/pic/1.jpg");
+               background-size:100% 100%;
+               z-index:-1;
+            }
+            ul li{
+                font-size:25px;
+                color:skyblue;
+            }
+        </style>
     </head>
     <body>
+        <div class="background-pic"></div>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="javascript:void();">
+                paas管理平台
+              </a>
+            </div>
+          </div>
+        </nav>
 
-        <a href="#" data-route="wheel" data-function="abc" data-args="">发布应用</a>
+        <ul>
+            <li>千呼万唤始出来，这次不再跳票</li>
+            <li>python + docker ，强强联合</li>
+            <li>自动部署，简化运维</li>
+            <li>支持多机集群</li>
+            <li>操作简单，无需服务器维护</li>
+            <li>更多功能，等待研发</li>
+        </ul>
 
         <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-        <script src="http://cdn.staticfile.org/artTemplate.js/3.0/template.js"></script>
-        <script src="/static/js/wheel.js"></script>
-        <script>
-            new Wheel().init();
-            function abc(){alert("123");}
-        </script>
+        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     </body>
 </html>
