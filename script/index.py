@@ -13,7 +13,7 @@ import threading
 import time
 
 
-class ContainerMonitorService(threading.Thread):
+class PassService(threading.Thread):
     def run(self):
         while True:
             try:
@@ -23,14 +23,9 @@ class ContainerMonitorService(threading.Thread):
                 login_log("container_monitor_script_error", err.args[0])
                 time.sleep(5)
 
-
-class TaskExecuteService(threading.Thread):
-    def run(self):
-        while True:
             try:
                 if not task_execute.init():
                     login_log("task_script", "任务队列没有任务")
-                    time.sleep(5)
                 login_log("task_script", "完成一次任务调度！")
             except Exception as err:
                 login_log("task_script_error", err.args[0])
@@ -42,9 +37,8 @@ def init():
     初始化函数
     :return:
     """
-    service1 = TaskExecuteService()
-    service1.start()
-    service2 = ContainerMonitorService()
-    service2.start()
+    service = PassService()
+    service.start()
+
     # container_monitor.init()
     # task_execute.init()
