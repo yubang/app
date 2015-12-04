@@ -46,4 +46,5 @@ def init():
     service1.start()
     service2 = ContainerMonitorService()
     service2.start()
-
+    # container_monitor.init()
+    # task_execute.init()

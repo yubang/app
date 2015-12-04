@@ -36,7 +36,7 @@ def request_api(url, data):
     d = get_config_data()
     data['token'] = d['token.token']
     try:
-        return requests.post(url, data)
+        return requests.post(url, data, timeout=600)
     except:
         class Obj(object):
            status_code = 0
@@ -108,6 +108,12 @@ def handle_app(app):
             reduce_sign = -1
         else:
             reduce_sign = 0
+
+    if container_nums >= app.max_container_number:
+        add_sign = 0
+
+    if container_nums <= app.min_container_number:
+        reduce_sign = 0
 
     sign = add_sign + reduce_sign
     if sign == 0:

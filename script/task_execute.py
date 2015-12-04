@@ -43,7 +43,7 @@ def request_api(url, data):
     d = get_config_data()
     data['token'] = d['token.token']
     try:
-        return requests.post(url, data)
+        return requests.post(url, data, timeout=600)
     except:
         class Obj(object):
            status_code = 0
