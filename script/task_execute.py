@@ -26,7 +26,6 @@ def init():
     入口函数
     :return:
     """
-    get_a_api_url()
     tasks = TaskQueueModel.select().limit(1)
     for task in tasks:
         handle_task(task)
