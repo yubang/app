@@ -35,7 +35,13 @@ def request_api(url, data):
     """
     d = get_config_data()
     data['token'] = d['token.token']
-    return requests.post(url, data)
+    try:
+        return requests.post(url, data)
+    except:
+        class Obj(object):
+           status_code = 0
+        obj = Obj()
+        return obj
 
 
 def get_app_avg_message(app_id):

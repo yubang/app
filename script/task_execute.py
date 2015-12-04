@@ -26,6 +26,7 @@ def init():
     入口函数
     :return:
     """
+    get_a_api_url()
     tasks = TaskQueueModel.select().limit(1)
     for task in tasks:
         handle_task(task)
@@ -40,20 +41,40 @@ def request_api(url, data):
     """
     d = get_config_data()
     data['token'] = d['token.token']
-    return requests.post(url, data)
-
+    try:
+        return requests.post(url, data)
+    except:
+        class Obj(object):
+           status_code = 0
+        obj = Obj()
+        return obj
 
 def get_a_api_url():
     """
     获取一个API服务器地址
     :return:
     """
-    try:
-        obj = ContainerServerModel.select().where(ContainerServerModel.status == 0).get()
+
+    objs = ContainerServerModel.select().where(ContainerServerModel.status == 0).order_by(ContainerServerModel.sort.desc())
+    d = [999999, 999999, None, None]
+    for obj in objs:
         url = "http://%s:%d/container/" % (obj.server_host, obj.server_port)
-        return url, obj.server_host
-    except:
-        return None, None
+        r = request_api(url+"analy", {})
+        if r.status_code != 200:
+            continue
+
+        response_data_obj = json.loads(r.text)
+        if response_data_obj['code'] != 0:
+            continue
+        if response_data_obj['result']['count'] < d[0] and response_data_obj['result']['totalMemory'] < d[1]:
+            d[2] = obj
+            d[0] = response_data_obj['result']['count']
+            d[1] = response_data_obj['result']['totalMemory']
+            d[3] = {"url": url, "server_host": obj.server_host}
+    if d[2] is None:
+        return None
+    login_log("containerAPI", "获取到的API服务器为：%s:%d，当前容器数：%d，容器内存：%dM" %(d[2].server_host, d[2].server_port, d[0], d[1]))
+    return d[3]['url'], d[3]['server_host']
 
 
 def add_one_container(task):

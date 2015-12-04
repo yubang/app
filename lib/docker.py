@@ -59,7 +59,6 @@ def get_container_memory_and_cpu(container_id):
 
     memory = int(obj['memory_stats']['usage']) * 100 / int(obj['memory_stats']['limit'])
     memory = float('%0.2f' % memory)
-    print(obj['cpu_stats'])
     cpu = int(obj['cpu_stats']['cpu_usage']['total_usage']) * 100 / int(obj['cpu_stats']['system_cpu_usage'])
     cpu = float('%0.2f' % cpu)
 
