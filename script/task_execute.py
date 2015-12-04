@@ -30,6 +30,7 @@ def init():
     tasks = TaskQueueModel.select().limit(1)
     for task in tasks:
         handle_task(task)
+    return TaskQueueModel.select().count()
 
 
 def request_api(url, data):
@@ -48,6 +49,7 @@ def request_api(url, data):
            status_code = 0
         obj = Obj()
         return obj
+
 
 def get_a_api_url():
     """
