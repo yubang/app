@@ -30,7 +30,7 @@ class PassService(threading.Thread):
             except Exception as err:
                 login_log("task_script_error", err.args[0])
                 time.sleep(5)
-
+            # time.sleep(5)
 
 def init():
     """
