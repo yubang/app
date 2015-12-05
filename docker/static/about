@@ -1,9 +1,9 @@
 静态资源docker
 
 软件版本：
-nginx 1.4.6
+nginx 1.8.0
 wget  1.15
-unzip 6.00
+tar 1.23
 
 生成镜像命令
 docker build -t paas-static .

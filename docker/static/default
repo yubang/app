@@ -1,8 +1,0 @@
-server{
-    listen 80 default;
-    index index.html index.htm;
-    root /var/www/html;
-    location / {
-        expires 1h;
-    }
-}

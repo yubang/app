@@ -9,7 +9,15 @@
 
 import os
 import shutil
+import sys
+import subprocess
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+# 检测python版本
+if sys.version[0] != "3":
+    print("请使用python3")
+    exit()
 
 # 安装提示
 print("欢迎安装paas小平台，禁止未授权用于商业用途！")
@@ -30,9 +38,6 @@ print("web控制台需要运行index.py")
 print("任务调度需要运行script.py")
 print("按任意键安装")
 input()
-
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 # 创建必须的文件夹
@@ -87,6 +92,21 @@ fp.close()
 
 # 复制必须的数据库文件
 shutil.copy(dir_path+"/install/data/base.db", dir_path+"/data/db/base.db")
+
+
+# 安装docker镜像
+dockers = (
+    (dir_path+"/docker/static", "docker build -t paas-static .", "正在安装静态资源镜像"),
+    (dir_path+"/docker/python2", "docker build -t paas-python2 .", "正在安装python2镜像"),
+    (dir_path+"/docker/python3", "docker build -t paas-python3 .", "正在安装python3镜像"),
+    (dir_path+"/docker/go1_5", "docker build -t paas-go .", "正在安装go1.5镜像"),
+    (dir_path+"/docker/nodejs4", "docker build -t paas-nodejs4 .", "正在安装nodejs4镜像"),
+    (dir_path+"/docker/java8", "docker build -t paas-java8 .", "正在安装java8镜像"),
+)
+for docker in dockers:
+    print(docker[2])
+    subprocess.call("cd %s && %s" % (docker[0], docker[1]), shell=True)
+    print("\n安装一个镜像完成！\n\n")
 
 
 print("安装完成，如需帮助请登录：https://github.com/yubang/app")
