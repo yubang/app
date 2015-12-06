@@ -32,6 +32,7 @@ cd php-7.0.0/
 
 ./configure \
 --prefix=/usr/local/php7 \
+--with-apxs2=/usr/sbin/apxs \
 --exec-prefix=/usr/local/php7 \
 --bindir=/usr/local/php7/bin \
 --sbindir=/usr/local/php7/sbin \
@@ -75,10 +76,14 @@ cd php-7.0.0/
 --enable-opcache \
 --enable-fpm \
 --enable-fastcgi \
---with-fpm-user=nginx \
---with-fpm-group=nginx \
+--with-fpm-user=php \
+--with-fpm-group=php \
 --without-gdbm \
 --disable-fileinfo
 
 make
 make install
+
+echo '<FilesMatch \.php$>' >> /etc/httpd/conf/httpd.conf
+echo 'SetHandler application/x-httpd-php' >> /etc/httpd/conf/httpd.conf
+echo '</FilesMatch>' >> /etc/httpd/conf/httpd.conf
