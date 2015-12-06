@@ -13,9 +13,6 @@ yum -y install curl-devel
 yum install libjpeg.x86_64 libpng.x86_64 freetype.x86_64 libjpeg-devel.x86_64 libpng-devel.x86_64 freetype-devel.x86_64 -y
 yum install libjpeg-devel -y
 
-echo /usr/local/lib >> /etc/ld.so.conf.d/local.conf 
-ldconfig -v 
-
 cd /tmp
 wget ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/attic/libmcrypt/libmcrypt-2.5.7.tar.gz 
 tar -zxvf libmcrypt-2.5.7.tar.gz 
@@ -23,6 +20,9 @@ cd libmcrypt-2.5.7
 ./configure
 make
 make install 
+
+echo /usr/local/lib >> /etc/ld.so.conf.d/local.conf 
+ldconfig -v 
 
 cd /tmp
 wget http://cn2.php.net/get/php-7.0.0.tar.gz/from/this/mirror
