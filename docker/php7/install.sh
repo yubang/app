@@ -87,3 +87,11 @@ make install
 echo '<FilesMatch \.php$>' >> /etc/httpd/conf/httpd.conf
 echo 'SetHandler application/x-httpd-php' >> /etc/httpd/conf/httpd.conf
 echo '</FilesMatch>' >> /etc/httpd/conf/httpd.conf
+
+echo '' >> /etc/httpd/conf/httpd.conf
+echo '<IfModule dir_module> ' >> /etc/httpd/conf/httpd.conf
+echo '    DirectoryIndex index.html index.php ' >> /etc/httpd/conf/httpd.conf
+echo '</IfModule> ' >> /etc/httpd/conf/httpd.conf
+
+
+
