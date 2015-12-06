@@ -84,6 +84,12 @@ cd php-7.0.0/
 make
 make install
 
+cp php.ini-production /usr/local/php7/etc/php.ini
+echo 'zend_extension=opcache.so' >> /usr/local/php7/etc/php.ini
+echo 'extension=mysqli.so' >> /usr/local/php7/etc/php.ini
+echo 'extension=pdo_mysql.so' >> /usr/local/php7/etc/php.ini
+
+
 echo '<FilesMatch \.php$>' >> /etc/httpd/conf/httpd.conf
 echo 'SetHandler application/x-httpd-php' >> /etc/httpd/conf/httpd.conf
 echo '</FilesMatch>' >> /etc/httpd/conf/httpd.conf

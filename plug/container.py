@@ -62,6 +62,7 @@ def get_realname_from_image_name(image_name):
     system_images['go1.5'] = 'paas-go'
     system_images['java8'] = 'paas-java8'
     system_images['nodejs4'] = 'paas-nodejs4'
+    system_images['php7'] = 'paas-php7'
     return system_images.get(image_name, 'paas-static')
 
 

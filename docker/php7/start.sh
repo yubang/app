@@ -3,7 +3,7 @@
 wget $1 -O /tmp/www.zip
 unzip /tmp/www.zip -d /var/www/html
 
-chmod -Rv 555 /var/www
+chmod -Rv 777 /var/www
 
 service httpd start
 

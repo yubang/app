@@ -45,7 +45,7 @@ def get_image_name_from_env(env):
     :param env: 索引
     :return: str
     """
-    images = {'0': "python2.7", '1': "python3.5", "2": "go1.5", "3": "nodejs4", "4": "java8", "5": "static", "6": "php5.6"}
+    images = {'0': "python2.7", '1': "python3.5", "2": "go1.5", "3": "nodejs4", "4": "java8", "5": "static", "6": "php7"}
     return images.get(env, None)
 
 
