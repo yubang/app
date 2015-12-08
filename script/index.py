@@ -39,7 +39,8 @@ class PassService(threading.Thread):
             # 关闭数据库
             close_connect()
 
-            # time.sleep(5)
+            time.sleep(5)
+
 
 def init():
     """

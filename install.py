@@ -102,6 +102,7 @@ dockers = (
     (dir_path+"/docker/go1_5", "docker build -t paas-go .", "正在安装go1.5镜像"),
     (dir_path+"/docker/nodejs4", "docker build -t paas-nodejs4 .", "正在安装nodejs4镜像"),
     (dir_path+"/docker/java8", "docker build -t paas-java8 .", "正在安装java8镜像"),
+    (dir_path+"/docker/php7", "docker build -t paas-php7 .", "正在安装php7镜像"),
 )
 for docker in dockers:
     print(docker[2])

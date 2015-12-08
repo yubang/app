@@ -1,10 +1,6 @@
 #!/bin/bash
 
 # 安装各种必须的软件
-yum groupinstall "Development tools" -y
-
-yum install wget -y
-yum install tar -y
 
 # 安装nginx
 

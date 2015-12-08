@@ -2,15 +2,13 @@
 
 # 安装各种必须的软件
 
-yum groupinstall "Development tools" -y
+
 yum install zlib-devel -y
 yum install bzip2-devel -y
 yum install openssl-devel -y
 yum install ncurses-devel -y
 yum install sqlite-devel -y
 
-yum install wget -y
-yum install tar -y
 
 cd /tmp
 wget https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tar.xz
