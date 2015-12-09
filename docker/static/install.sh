@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # 安装各种必须的软件
-yum groupinstall "Development tools" -y
-yum install wget -y
-yum install tar -y
+
 
 cd /tmp
 yum -y install zlib zlib-devel openssl openssl--devel pcre pcre-devel

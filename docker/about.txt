@@ -14,6 +14,9 @@ python3.5
 static
 没有特殊要求
 
+php
+没有特殊要求
+
 node.js4..2
 要求入口文件为index.js，需要提供package.json，需要监听127.0.0.1:8000
 
