@@ -9,6 +9,7 @@
 * go1.5
 * nodejs4
 * static
+* php7
 
 * * * * *
 
