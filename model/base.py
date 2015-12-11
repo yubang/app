@@ -15,15 +15,18 @@ db = MySQLDatabase(database=d['mysql.db_name'], user=d['mysql.db_username'], pas
 sqlite_db = SqliteDatabase("data/db/base.db", threadlocals=True)
 
 
-def start_connect():
+def start_connect(sqlite_db_use=True):
+    return None
     db.connect()
-    sqlite_db.connect()
+    if sqlite_db_use:
+        sqlite_db.connect()
 
 
-def close_connect():
+def close_connect(sqlite_db_use=True):
+    return None
     if not db.is_closed():
         db.close()
-    if not sqlite_db.is_closed():
+    if sqlite_db_use and not sqlite_db.is_closed():
         sqlite_db.close()
 
 

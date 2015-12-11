@@ -39,7 +39,7 @@ print("清除session结束")
 
 # 清除孤儿容器
 print("开始清除孤儿容器")
-start_connect()
+start_connect(sqlite_db_use=False)
 c = db.execute_sql("select id, api_url, container_id, app_id, host, port  from app_container where app_id not in "
                    "(select id from app)")
 objs = c.fetchall()
@@ -66,10 +66,10 @@ for t in objs:
             login_log("maintain", "删除孤儿容器成功，所属应用id：%d，容器id：%s，容器域名：%s，容器端口：%d" % (obj['app_id'],
                                                                                   obj['container_id'], obj['host'],
                                                                                   obj['port']))
-
+            continue
     login_log("maintain_error", "删除孤儿容器失败，所属应用id：%d，容器id：%s，容器域名：%s，容器端口：%d" % (obj['app_id'],
                                                                                 obj['container_id'], obj['host'],
                                                                                 obj['port']))
 
-close_connect()
+close_connect(sqlite_db_use=False)
 print("清除孤儿容器结束")

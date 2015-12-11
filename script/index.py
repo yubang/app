@@ -19,7 +19,7 @@ class PassService(threading.Thread):
         while True:
 
             # 打开连接
-            start_connect()
+            start_connect(sqlite_db_use=False)
 
             try:
                 container_monitor.init()
@@ -37,7 +37,7 @@ class PassService(threading.Thread):
                 time.sleep(5)
 
             # 关闭数据库
-            close_connect()
+            close_connect(sqlite_db_use=False)
 
             time.sleep(5)
 
