@@ -51,7 +51,7 @@ class SessionMiddle(object):
         session_id = request.cookies.get('session_id', None)
         if session_id is None:
             session_id = hashlib.md5(datetime.datetime.now().strftime("%Y%m%d%H%M%S").encode("UTF-8")).hexdigest()
-            response.set_cookie("session_id", session_id)
+            response.set_cookie("session_id", session_id, path="/", max_age=3600)
         self.__session_id = session_id
         request.session = get_session(session_id)
         return None

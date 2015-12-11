@@ -79,7 +79,9 @@ def build_one_container(image_name, memory, code_address):
     system_image = get_realname_from_image_name(image_name)
     command = "docker run -d -m %dm -p %d:80 %s /bin/bash /tmp/start.sh '%s'" % (int(memory), port, system_image, code_address)
 
-    subprocess.getstatusoutput(command)
+    code, _ = subprocess.getstatusoutput(command)
+    if code != 0:
+        return {"code": 10004}
 
     code, result = subprocess.getstatusoutput("docker ps | grep -v grep |grep 0.0.0.0:%d|awk -F ' ' '{print $1}'" % port)
     if code != 0:
