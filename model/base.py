@@ -9,8 +9,16 @@
 from peewee import Model, SqliteDatabase, MySQLDatabase
 from lib.config import get_config_data
 
+
+class OwnMySqlDatabase(MySQLDatabase):
+    def get_conn(self):
+        con = MySQLDatabase.get_conn(self)
+        con.ping()
+        return con
+
+
 d = get_config_data()
-db = MySQLDatabase(database=d['mysql.db_name'], user=d['mysql.db_username'], passwd=d['mysql.db_password'],
+db = OwnMySqlDatabase(database=d['mysql.db_name'], user=d['mysql.db_username'], passwd=d['mysql.db_password'],
                    host=d['mysql.db_host'], port=int(d['mysql.db_port']), charset="utf8")
 sqlite_db = SqliteDatabase("data/db/base.db", threadlocals=True)
 
