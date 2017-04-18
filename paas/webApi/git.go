@@ -22,8 +22,9 @@ func buildImageCallback(w http.ResponseWriter, r *http.Request){
 
 	taskId := r.FormValue("taskId")
 	imageName := r.FormValue("imageName")
+	result := r.FormValue("result")
 
-	if taskId == "" || imageName == ""{
+	if taskId == "" || imageName == "" || result == ""{
 		output(w, httpCode.ParameterMissingCode, nil)
 		return
 	}
