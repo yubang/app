@@ -14,3 +14,12 @@ func Float64ToString(n float64) string{
 func IntToString(n int) string{
 	return strconv.Itoa(n)
 }
+
+func StringToInt(s string) int{
+	n, err := strconv.Atoi(s)
+	if err != nil{
+		panic("参数类型不正确！")
+		return 0
+	}
+	return n
+}
