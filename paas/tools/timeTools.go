@@ -10,6 +10,7 @@ import (
 @author: yubang
  */
 
+// 获取系统当前时间
 func GetNowTime(timeFormat string) string{
 	// 2006-01-02 15:04:05 ======> %Y-%m-%d %H:%M:%S
 	var arrs = [6][2]string{{"%Y", "2006"},{"%m", "01"},{"%d", "02"},{"%H", "15"},{"%M", "04"},{"%S", "05"}}

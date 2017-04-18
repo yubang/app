@@ -2,6 +2,7 @@ package main
 
 import (
 	"./paas/tools"
+	"./paas/proxy"
 	"net/http"
 )
 
@@ -9,7 +10,7 @@ import (
 func proxyHandler(w http.ResponseWriter, r *http.Request){
 	host := r.Host
 	tools.Debug("请求的域名：" + host)
-	w.Write([]byte("测试"))
+	proxy.ProxyHttp("127.0.0.5", 9000, w, r)
 }
 
 func main(){
