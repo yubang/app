@@ -4,6 +4,7 @@ import (
 	"./paas/tools"
 	"./paas/proxy"
 	"net/http"
+	"./paas/config"
 )
 
 // 处理http proxy
@@ -15,16 +16,15 @@ func proxyHandler(w http.ResponseWriter, r *http.Request){
 
 func main(){
 	// 读取配置文件
-	jsonString := tools.ReadFromFile("./config.json")
-	configObj := tools.JsonToInterface(jsonString)
+	var configObj config.PassConfig
+	configObj = config.GetPaasConfig()
 
-	if configObj == nil{
+	if configObj.Err{
 		tools.Error("配置文件格式有误！")
 		return
 	}
 
-	httpProxy := configObj["httpProxy"].(map[string]interface{})
-	addr := httpProxy["ip"].(string) + ":" + tools.Float64ToString(httpProxy["port"].(float64))
+	addr := configObj.HttpProxyConfigData.Ip + ":" + tools.Float64ToString(configObj.HttpProxyConfigData.Port)
 
 	tools.Info("监听地址：" + addr)
 
