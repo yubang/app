@@ -31,5 +31,7 @@ func getRoutes() map[string]func(w http.ResponseWriter, r *http.Request){
 	routes[config.GetIpApi] = getIp
 	routes[config.GetOptionContainerTaskAPI] = getContainerTask
 	routes[config.OptionContainerCallbackAPI] = optionContainerCallback
+
+	routes[config.WEBAPI_BuildImage] = buildImage
 	return routes
 }

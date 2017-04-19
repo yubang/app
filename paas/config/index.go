@@ -5,6 +5,13 @@ import (
 	"net/http"
 )
 
+type RedisConfig struct {
+	Host string
+	Port int
+	Db int
+	Password string
+}
+
 type HttpProxyConfig struct {
 	Ip string
 	Port float64
@@ -20,6 +27,7 @@ type PassConfig struct {
 	Token string
 	HttpProxyConfigData HttpProxyConfig
 	ApiServerConfigData ApiServerConfig
+	RedisConfigData RedisConfig
 }
 
 func GetPaasConfig() PassConfig{
@@ -46,6 +54,13 @@ func GetPaasConfig() PassConfig{
 	apiServerConfig.Ip = obj["apiServer"].(map[string]interface{})["ip"].(string)
 	apiServerConfig.Port = obj["apiServer"].(map[string]interface{})["port"].(float64)
 	passConfig.ApiServerConfigData = *apiServerConfig
+
+	redisConfig := new(RedisConfig)
+	redisConfig.Host = obj["redis"].(map[string]interface{})["host"].(string)
+	redisConfig.Port = tools.Float64ToInt(obj["redis"].(map[string]interface{})["port"].(float64))
+	redisConfig.Db = tools.Float64ToInt(obj["redis"].(map[string]interface{})["db"].(float64))
+	redisConfig.Password = obj["redis"].(map[string]interface{})["password"].(string)
+	passConfig.RedisConfigData = *redisConfig
 
 	return *passConfig
 }
