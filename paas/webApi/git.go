@@ -5,7 +5,7 @@ import "../httpCode"
 import "../redisClient"
 import "../config"
 import (
-	"../tools"
+	"../task"
 	"github.com/go-redis/redis"
 )
 
@@ -21,7 +21,7 @@ func getAGitPullTask(w http.ResponseWriter, r *http.Request){
 	client := redisClient.GetRedisClient()
 	defer client.Close()
 
-	redisKey, err := client.LPop(config.REDIS_KEY_TASK_IMAGE_LIST).Result()
+	taskId, err := client.LPop(config.REDIS_KEY_TASK_IMAGE_LIST).Result()
 	if err == redis.Nil{
 		output(w, httpCode.NotTaskCode, nil)
 		return
@@ -30,17 +30,7 @@ func getAGitPullTask(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	taskJson, err2 := client.HGet(config.REDIS_KEY_TASK_HASH + tools.GetSplitFirstArr(redisKey, "_"), redisKey).Result()
-
-	if err2 == redis.Nil{
-		output(w, httpCode.NotTaskCode, nil)
-		return
-	}else if err != nil{
-		output(w, httpCode.ServerErrorCode, nil)
-		return
-	}
-
-	taskObj := tools.JsonToInterface([]byte(taskJson))
+	taskObj := task.GetTaskObjFromTaskId(taskId)
 
 	d := make(map[string]interface{})
 	d["taskId"] = taskObj["taskId"]
@@ -59,6 +49,13 @@ func buildImageCallback(w http.ResponseWriter, r *http.Request){
 	if taskId == "" || imageName == "" || result == ""{
 		output(w, httpCode.ParameterMissingCode, nil)
 		return
+	}
+
+	if result == "OK"{
+		// 标志镜像打包完成
+
+	}else{
+		// pass
 	}
 
 	d := make(map[string]interface{})

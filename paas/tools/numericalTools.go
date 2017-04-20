@@ -31,6 +31,25 @@ func StringToInt(s string) int{
 	return n
 }
 
+func StringToInt64(s string) int64{
+	n, err := strconv.ParseInt(s, 10, 64)
+	if err != nil{
+		panic("参数类型不正确！")
+		return 0
+	}
+	return n
+}
+
+func StringToFloat64(s string) float64{
+	n, err := strconv.ParseFloat(s, 32)
+	if err != nil{
+		panic("参数类型不正确！")
+		return 0.0
+	}
+	return n
+}
+
+
 func Float64ToInt(n float64) int{
 	return int(n)
 }
@@ -75,4 +94,9 @@ func GetSplitLastArr(s string, splitString string) string{
 func GetSplitFirstArr(s string, splitString string) string{
 	arrs := strings.Split(s, splitString)
 	return arrs[0]
+}
+
+// int64转成int
+func Int64ToInt(n int64)int{
+	return int(n)
 }

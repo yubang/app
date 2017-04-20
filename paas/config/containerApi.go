@@ -7,3 +7,5 @@ package config
 
 var GetOptionContainerTaskAPI = "/api/container/task"
 var OptionContainerCallbackAPI = "/api/container/callback"
+
+var LoginContainerAPI = "/api/container/login"

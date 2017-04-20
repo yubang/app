@@ -20,3 +20,8 @@ func GetNowTime(timeFormat string) string{
 
 	return time.Now().Format(timeFormat)
 }
+
+// 获取系统当前时间
+func GetNowTimeSecond()int{
+	return Int64ToInt(time.Now().UnixNano() / 1000 /1000)
+}
