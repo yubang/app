@@ -45,5 +45,10 @@ func getRoutes() map[string]func(w http.ResponseWriter, r *http.Request){
 
 	// UI控制台相关API
 	routes[config.WEBAPI_BuildImage] = buildImage
+
+	// APP操作相关API
+	routes[config.WEBAPI_AddApp] = addApp
+	routes[config.WEBAPI_RemoveApp] = removeApp
+
 	return routes
 }

@@ -1,12 +1,12 @@
 package webApi
 
-import "net/http"
-import "../httpCode"
-import "../redisClient"
-import "../task"
-import "../config"
 import (
 	"../tools"
+	"../config"
+	"../task"
+	"../redisClient"
+	"../httpCode"
+	"net/http"
 )
 
 /*
@@ -51,4 +51,74 @@ func buildImage(w http.ResponseWriter, r *http.Request){
 	d := make(map[string]interface{})
 	d["taskId"] = taskId
 	output(w, httpCode.OkCode, d)
+}
+
+// 添加一个应用接口
+func addApp(w http.ResponseWriter, r *http.Request){
+	appId := r.FormValue("appId")
+	appHost := r.FormValue("appHost")
+	sourceImage := r.FormValue("sourceImage")
+	minContainerNumber := r.FormValue("minContainerNumber")
+	maxContainerNumber := r.FormValue("maxContainerNumber")
+	gitUrl := r.FormValue("gitUrl")
+
+	// 检查参数
+	if appId == "" || appHost == "" || sourceImage == "" || minContainerNumber == "" || maxContainerNumber == "" || gitUrl == ""{
+		output(w, httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	client := redisClient.GetRedisClient()
+	defer client.Close()
+
+	// 设置应用信息
+	redisKey := config.REDIS_KEY_APP_MESSAGE_HASH + appId
+	client.HSet(redisKey, "gitUrl", gitUrl)
+	client.HSet(redisKey, "appHost", appHost)
+	client.HSet(redisKey, "minContainerNumber", minContainerNumber)
+	client.HSet(redisKey, "maxContainerNumber", maxContainerNumber)
+	client.HSet(redisKey, "buildingImage", "0")
+	client.HSet(redisKey, "sourceImage", sourceImage) // 原始镜像，用于打包
+	client.HSet(redisKey, "image", "") // 还没打包成镜像
+
+	// 压入队列
+	err2 := client.RPush(config.REDIS_KEY_APP_LIST, appId).Err()
+	if err2 != nil{
+		output(w, httpCode.ServerErrorCode, nil)
+		return
+	}
+	output(w, httpCode.OkCode, nil)
+}
+
+// 删除应用
+func removeApp(w http.ResponseWriter, r *http.Request){
+	appId := r.FormValue("appId")
+	if appId == ""{
+		output(w, httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	client := redisClient.GetRedisClient()
+	defer client.Close()
+
+	length, err := client.LLen(config.REDIS_KEY_APP_LIST).Result()
+	if err != nil{
+		output(w, httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	for ;length > 0;length--{
+		d, err2 := client.LPop(config.REDIS_KEY_APP_LIST).Result()
+		if err2 != nil{
+			break
+		}
+		if d == appId{
+			// 删除app信息
+			client.Del(config.REDIS_KEY_APP_MESSAGE_HASH + appId)
+			break
+		}
+		client.RPush(config.REDIS_KEY_APP_LIST, d)
+	}
+
+	output(w, httpCode.OkCode, nil)
 }

@@ -41,6 +41,8 @@ func optionContainerCallback(w http.ResponseWriter, r *http.Request){
 // 登记容器服务器
 func loginContainerServer(w http.ResponseWriter, r *http.Request){
 	ip, _ := getRequestIp(r)
+	memory := r.FormValue("memory")
+	disk := r.FormValue("disk")
 
 	client := redisClient.GetRedisClient()
 	defer client.Close()
@@ -55,6 +57,11 @@ func loginContainerServer(w http.ResponseWriter, r *http.Request){
 		// client.ZAdd(config.REDIS_KEY_CONTAINER_SERVER_IP_ZSET, redis.Z{float64(length), ip})
 		client.RPush(config.REDIS_KEY_CONTAINER_SERVER_IP_LIST, ip)
 	}
+
+	// 记录容器服务器信息
+	redisKey := config.REDIS_KEY_CONTAINER_SERVER_INFO_HASH + ip
+	client.HSet(redisKey, "memory", memory)
+	client.HSet(redisKey, "disk", disk)
 
 	d := make(map[string]interface{})
 	d["ip"] = ip

@@ -6,6 +6,8 @@ import (
 	"github.com/go-redis/redis"
 )
 
+type TypeRedisClient  redis.Client
+
 func GetRedisClient()*redis.Client{
 	configObj := config.GetPaasConfig()
 	client := redis.NewClient(&redis.Options{

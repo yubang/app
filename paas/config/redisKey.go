@@ -14,9 +14,6 @@ var REDIS_KEY_TASK_IMAGE_LIST = "paas_task_image_list"
 // 任务处理后续任务队列
 var REDIS_KEY_TASK_AFTER_HANDLER_LIST = "paas_task_after_handler_list"
 
-// APP信息hash（请自行添加appid）
-var REDIS_KEY_APP_MESSAGE_HASH = "paas_app_message_hash_"
-
 /*
 容器服务器相关
  */
@@ -28,3 +25,21 @@ var REDIS_KEY_CONTAINER_SERVER_IP_SET = "paas_container_server_ip_set"
 var REDIS_KEY_CONTAINER_SERVER_IP_ZSET = "paas_container_server_ip_zset"
 // 一个排序的容器服务器list
 var REDIS_KEY_CONTAINER_SERVER_IP_LIST = "paas_container_server_ip_list"
+// 记录容器服务器具体信息hash（请自行添加ip）
+var REDIS_KEY_CONTAINER_SERVER_INFO_HASH = "paas_container_server_info_hash_"
+
+/*
+应用相关
+ */
+
+// APP信息hash（请自行添加appid）
+var REDIS_KEY_APP_MESSAGE_HASH = "paas_app_message_hash_"
+
+// APP列表
+var REDIS_KEY_APP_LIST = "paas_app_list"
+
+/*
+容器服务器任务相关
+ */
+// 一个计划应用分配json字符串（请自行添加）
+var REDIS_KEY_PLAN_CONTAIN_USE_STR = "paas_plan_container_use_"
