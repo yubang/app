@@ -60,10 +60,11 @@ func addApp(w http.ResponseWriter, r *http.Request){
 	sourceImage := r.FormValue("sourceImage")
 	minContainerNumber := r.FormValue("minContainerNumber")
 	maxContainerNumber := r.FormValue("maxContainerNumber")
+	memory := r.FormValue("memory")
 	gitUrl := r.FormValue("gitUrl")
 
 	// 检查参数
-	if appId == "" || appHost == "" || sourceImage == "" || minContainerNumber == "" || maxContainerNumber == "" || gitUrl == ""{
+	if appId == "" || appHost == "" || sourceImage == "" || minContainerNumber == "" || maxContainerNumber == "" || gitUrl == "" || memory == ""{
 		output(w, httpCode.ParameterMissingCode, nil)
 		return
 	}
@@ -80,6 +81,7 @@ func addApp(w http.ResponseWriter, r *http.Request){
 	client.HSet(redisKey, "buildingImage", "0")
 	client.HSet(redisKey, "sourceImage", sourceImage) // 原始镜像，用于打包
 	client.HSet(redisKey, "image", "") // 还没打包成镜像
+	client.HSet(redisKey, "memory", memory)
 
 	// 压入队列
 	err2 := client.RPush(config.REDIS_KEY_APP_LIST, appId).Err()

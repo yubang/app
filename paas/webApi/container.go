@@ -44,6 +44,11 @@ func loginContainerServer(w http.ResponseWriter, r *http.Request){
 	memory := r.FormValue("memory")
 	disk := r.FormValue("disk")
 
+	if memory == "" || disk == ""{
+		output(w, httpCode.ParameterMissingCode, nil)
+		return
+	}
+
 	client := redisClient.GetRedisClient()
 	defer client.Close()
 
@@ -56,6 +61,8 @@ func loginContainerServer(w http.ResponseWriter, r *http.Request){
 	if err == nil && length != 0{
 		// client.ZAdd(config.REDIS_KEY_CONTAINER_SERVER_IP_ZSET, redis.Z{float64(length), ip})
 		client.RPush(config.REDIS_KEY_CONTAINER_SERVER_IP_LIST, ip)
+		// 同时初始化容器服务器分配计划
+		client.Set(config.REDIS_KEY_PLAN_CONTAIN_USE_STR + ip, "{}", 0)
 	}
 
 	// 记录容器服务器信息

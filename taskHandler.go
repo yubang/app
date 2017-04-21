@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"./paas/task"
+)
 
 /*
 产生调度任务模块
@@ -8,5 +10,5 @@ import "fmt"
  */
 
 func main(){
-	fmt.Print("welcome")
+	task.AnalyContainer()
 }
