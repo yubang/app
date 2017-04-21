@@ -122,18 +122,18 @@ func analyApp(appId string, client *redisClient.TypeRedisClient){
 		}
 		if planObj[appId] == nil{ // 初始化数据，防止空数据
 			planObj[appId] = make(map[string]interface{})
-			planObj[appId].(map[string]interface{})["num"] = 0
+			planObj[appId].(map[string]interface{})["num"] = float64(0)
 			planObj[appId].(map[string]interface{})["memory"] = memory
 			planObj[appId].(map[string]interface{})["image"] = image
 		}
 
 		// 尝试添加分配资源计划
 		for;;{
-			if ableUseMemory + memory > totalUseMemory || appContainerNumber >= planContainerNum{
+			if totalUseMemory + memory > ableUseMemory || appContainerNumber >= planContainerNum{
 				break
 			}
 			planObj[appId].(map[string]interface{})["num"] = planObj[appId].(map[string]interface{})["num"].(float64) + float64(1)
-			ableUseMemory += memory
+			totalUseMemory += memory
 			appContainerNumber += 1
 		}
 
