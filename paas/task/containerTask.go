@@ -9,6 +9,7 @@ import (
 	"../config"
 	"../redisClient"
 	"../tools"
+	"github.com/go-redis/redis"
 )
 
 
@@ -16,7 +17,7 @@ import (
 func getContainerPlanInFuncAnalyApp(index int64, client *redisClient.TypeRedisClient) (map[string]interface{}, string){
 	// 获取容器服务器ip
 	containerIp, err2 := client.LIndex(config.REDIS_KEY_CONTAINER_SERVER_IP_LIST, index).Result()
-	if err2 != nil{
+	if err2 != nil || err2 == redis.Nil{
 		return nil, ""
 	}
 
@@ -73,6 +74,7 @@ func analyApp(appId string, client *redisClient.TypeRedisClient){
 		}
 		 */
 		planObj, containerIp := getContainerPlanInFuncAnalyApp(index, client)
+
 		if planObj == nil{
 			continue
 		}
@@ -80,15 +82,16 @@ func analyApp(appId string, client *redisClient.TypeRedisClient){
 			planNum := tools.Float64ToInt(planObj[appId].(map[string]interface{})["num"].(float64))
 			if memory !=  tools.Float64ToInt(planObj[appId].(map[string]interface{})["memory"].(float64)) || image != planObj[appId].(map[string]interface{})["image"].(string){
 				// 判断镜像名字和内存有没有变化
-				delete(planObj[appId].(map[string]interface{}), appId)
+				delete(planObj, appId)
 			}else if planNum + appContainerNumber > planContainerNum{
 				// 判断数量是否超过上限
 				if appContainerNumber >= planContainerNum{
 					// 释放所有容器
-					delete(planObj[appId].(map[string]interface{}), appId)
+					delete(planObj, appId)
 				}else{
 					// 释放超过部分容器
 					planObj[appId].(map[string]interface{})["num"] = float64(planContainerNum - appContainerNumber)
+					appContainerNumber += int(planContainerNum - appContainerNumber)
 				}
 			}else{
 				// 符合规定，计算当前容器数
@@ -132,7 +135,7 @@ func analyApp(appId string, client *redisClient.TypeRedisClient){
 			if totalUseMemory + memory > ableUseMemory || appContainerNumber >= planContainerNum{
 				break
 			}
-			planObj[appId].(map[string]interface{})["num"] = planObj[appId].(map[string]interface{})["num"].(float64) + float64(1)
+			planObj[appId].(map[string]interface{})["num"] = planObj[appId].(map[string]interface{})["num"].(float64) + 1
 			totalUseMemory += memory
 			appContainerNumber += 1
 		}
@@ -144,8 +147,6 @@ func analyApp(appId string, client *redisClient.TypeRedisClient){
 		// 写回redis
 		planJsonByte := tools.InterfaceToJson(planObj)
 		client.Set(config.REDIS_KEY_PLAN_CONTAIN_USE_STR + containerIp, planJsonByte, 0)
-
-
 	}
 	// 判断容器分配是否成功完成
 	if appContainerNumber < planContainerNum{
