@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/url"
-	"fmt"
 	"./paas/config"
 	"./paas/tools"
 	"./paas/osutil"
@@ -52,17 +51,45 @@ func synchronizationAllocation(){
 		}
 	}
 
-	for v := range obj["data"].([]map[string]interface{}){
+	addPopMap := make(map[string]int)
 
-
-
-
+	for _, v := range obj["data"].(map[string]interface{}){
+		// 计算容器需要增加或者减少的次数
+		n := docker.GetATypeOfImageContainerNumber(v.(map[string]interface{})["image"].(string))
+		addPopMap[v.(map[string]interface{})["image"].(string)] = tools.Float64ToInt(v.(map[string]interface{})["num"].(float64)) - n
 	}
+
+	// 处理加减容器
+	for k, v := range addPopMap{
+		if v > 0{
+			for index:= v;index >0; index--{
+				// 添加一个容器
+				port := docker.GetAbleUserPort()
+				docker.StartAContainer(k, port, 80)
+			}
+		}else if v < 0{
+			for index:= v;index <0; index++{
+				// 移除一个容器
+				containerId := docker.GetAContainer(k)
+				docker.RemoveAContainer(containerId)
+			}
+		}
+	}
+
+}
+
+// 记录容器情况
+func callbackAllocation(){
+
+	containerList := docker.GetAllContainerList()
+	
+
 }
 
 func main(){
 	loginContainer() // 登记服务器
 	synchronizationAllocation() // 同步资源
+	callbackAllocation() // 记录容器资源
 
 	//// 操作容器逻辑
 	//
