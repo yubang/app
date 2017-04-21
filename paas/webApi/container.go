@@ -15,10 +15,24 @@ import (
 
 // 获取一个容器操作任务
 func getContainerTask(w http.ResponseWriter, r *http.Request){
-	d := make(map[string]interface{})
-	d["taskId"] = "123"
-	d["imageName"] = "abcdef"
-	output(w, httpCode.OkCode, d)
+
+	client := redisClient.GetRedisClient()
+	defer client.Close()
+
+	// 读取整个容器服务器计划分配资源方案
+	ip, _ := getRequestIp(r)
+	s, err := client.Get(config.REDIS_KEY_PLAN_CONTAIN_USE_STR + ip).Result()
+	if err != nil{
+		output(w, httpCode.ServerErrorCode, nil)
+		return
+	}
+	sObj := tools.JsonToInterface([]byte(s))
+	if sObj == nil{
+		output(w, httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	output(w, httpCode.OkCode, sObj)
 }
 
 // 处理容器操作回调处理
