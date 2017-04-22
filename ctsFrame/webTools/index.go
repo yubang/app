@@ -7,6 +7,7 @@ import (
 /*
 封装http服务相关操作
 @author: yubang
+创建于2017年04月22日
  */
 
 /*
