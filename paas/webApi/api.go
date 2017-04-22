@@ -53,8 +53,8 @@ func buildImage(w http.ResponseWriter, r *http.Request){
 	output(w, httpCode.OkCode, d)
 }
 
-// 添加一个应用接口
-func addApp(w http.ResponseWriter, r *http.Request){
+// 处理应用信息
+func handleApp(w http.ResponseWriter, r *http.Request, isAdd bool){
 	appId := r.FormValue("appId")
 	appHost := r.FormValue("appHost")
 	sourceImage := r.FormValue("sourceImage")
@@ -83,6 +83,15 @@ func addApp(w http.ResponseWriter, r *http.Request){
 	client.HSet(redisKey, "image", "") // 还没打包成镜像
 	client.HSet(redisKey, "memory", memory)
 
+	// 绑定域名与应用关系
+	client.HSet(config.REDIS_KEY_PROXY_DOMAIN_APP_HASH, appHost, appId)
+
+	if !isAdd{
+		// 非新增应用，到此结束
+		output(w, httpCode.OkCode, nil)
+		return
+	}
+
 	// 压入队列
 	err2 := client.RPush(config.REDIS_KEY_APP_LIST, appId).Err()
 	if err2 != nil{
@@ -90,6 +99,16 @@ func addApp(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	output(w, httpCode.OkCode, nil)
+}
+
+// 添加一个应用接口
+func addApp(w http.ResponseWriter, r *http.Request){
+	handleApp(w, r, true)
+}
+
+// 更新应用
+func updateApp(w http.ResponseWriter, r *http.Request){
+	handleApp(w, r, false)
 }
 
 // 删除应用

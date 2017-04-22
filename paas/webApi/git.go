@@ -44,18 +44,32 @@ func buildImageCallback(w http.ResponseWriter, r *http.Request){
 
 	taskId := r.FormValue("taskId")
 	imageName := r.FormValue("imageName")
-	result := r.FormValue("result")
 
-	if taskId == "" || imageName == "" || result == ""{
+	if taskId == ""{
 		output(w, httpCode.ParameterMissingCode, nil)
 		return
 	}
 
-	if result == "OK"{
-		// 标志镜像打包完成
+	// 获取应用id
+	obj := task.GetTaskObjFromTaskId(taskId)
+	if obj == nil{
+		output(w, httpCode.ServerErrorCode, nil)
+		return
+	}
+	appId := obj["appId"].(string)
 
+
+	client := redisClient.GetRedisClient()
+	defer client.Close()
+
+	redisKey := config.REDIS_KEY_APP_MESSAGE_HASH + appId
+	if imageName != ""{
+		// 标志镜像打包完成
+		client.HSet(redisKey, "image" , imageName)
+		client.HSet(redisKey, "buildingImage" , 1)
 	}else{
 		// pass
+		client.HSet(redisKey, "buildingImage" , 2)
 	}
 
 	d := make(map[string]interface{})

@@ -49,6 +49,7 @@ func getRoutes() map[string]func(w http.ResponseWriter, r *http.Request){
 	// APP操作相关API
 	routes[config.WEBAPI_AddApp] = addApp
 	routes[config.WEBAPI_RemoveApp] = removeApp
+	routes[config.WEBAPI_UpdateApp] = updateApp
 
 	return routes
 }

@@ -13,8 +13,8 @@ http proxy相关业务封装
  */
 
 // 处理http proxy
-func ProxyHttp(proxyHost string, proxyPort int, w http.ResponseWriter, r *http.Request){
-	sourceUrl := "http://" + proxyHost + ":" + tools.IntToString(proxyPort) + r.RequestURI
+func ProxyHttp(proxyHostAndPort string, w http.ResponseWriter, r *http.Request){
+	sourceUrl := "http://" + proxyHostAndPort + r.RequestURI
 	tools.Debug("反向代理到URL：" + sourceUrl)
 	proxyUrl, _ := url.Parse(sourceUrl)
 	httpProxy := httputil.NewSingleHostReverseProxy(proxyUrl)

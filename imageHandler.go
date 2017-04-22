@@ -12,6 +12,11 @@ import (
 	"net/url"
 )
 
+// 构建一个镜像
+func buildImage(sourceImage string, gitUrl string)string{
+	return ""
+}
+
 func main(){
 	configObj := config.GetPaasConfig()
 	apiUrl := "http://" + configObj.ApiServerConfigData.Ip + ":" + tools.Float64ToString(configObj.ApiServerConfigData.Port) + config.BuildImageTaskAPI
@@ -23,11 +28,13 @@ func main(){
 	}
 
 	// 构建镜像逻辑
-	fmt.Print(obj["data"])
+	data := obj["data"].(map[string]interface{})
+	imageName := buildImage(data["dockerImage"].(string), data["gitUrl"].(string))
+
 	// 回调结果
 	apiUrl = "http://" + configObj.ApiServerConfigData.Ip + ":" + tools.Float64ToString(configObj.ApiServerConfigData.Port) + config.BuildImageCallbackAPI
 	taskId := (obj["data"].(map[string]interface{}))["taskId"].(string)
-	obj = tools.Post(apiUrl, url.Values{"token": {configObj.Token}, "taskId": {taskId}, "imageName":{"abc"}, "result": {"OK"}})
+	obj = tools.Post(apiUrl, url.Values{"token": {configObj.Token}, "taskId": {taskId}, "imageName":{imageName}})
 
 	fmt.Print(obj)
 }
