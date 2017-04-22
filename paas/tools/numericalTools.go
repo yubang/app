@@ -100,3 +100,8 @@ func GetSplitFirstArr(s string, splitString string) string{
 func Int64ToInt(n int64)int{
 	return int(n)
 }
+
+// []byte -> string
+func ByteListToString(b []byte)string{
+	return string(b)
+}

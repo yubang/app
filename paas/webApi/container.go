@@ -6,6 +6,7 @@ import (
 	"../redisClient"
 	"../httpCode"
 	"net/http"
+	"github.com/go-redis/redis"
 )
 
 /*
@@ -38,17 +39,63 @@ func getContainerTask(w http.ResponseWriter, r *http.Request){
 // 处理容器操作回调处理
 func optionContainerCallback(w http.ResponseWriter, r *http.Request){
 
-	taskId := r.FormValue("taskId")
-	result := r.FormValue("result")
-	host := r.FormValue("ip")
-	port := r.FormValue("port")
+	ip, _ := getRequestIp(r)
+	containerInfo := r.FormValue("containerInfo")
 
-	if taskId == "" || result == "" || host == "" || port == ""{
+	if containerInfo == ""{
 		output(w, httpCode.ParameterMissingCode, nil)
 		return
 	}
 
+	containerList := tools.JsonToInterfaceList([]byte(containerInfo))
+	if containerList == nil{
+		output(w, httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	// redis对象
+	client := redisClient.GetRedisClient()
+	defer client.Close()
+
+	// 判断需要解除绑定的端口
+	oldContainerInfoStr, err := client.HGet(config.REDIS_KEY_PROXY_APP_CONTAINER_HASH, ip).Result()
+	if err == redis.Nil{
+		oldContainerInfoStr = "[]"
+	}else if err != nil{
+		output(w, httpCode.ServerErrorCode, nil)
+		return
+	}
+	oldContainerInfoList := tools.JsonToInterfaceList([]byte(oldContainerInfoStr))
+	for _, v := range oldContainerInfoList{
+		deleteSign := true
+		containerMap := v.(map[string]interface{})
+
+		// 遍历判断
+		for _, v2 := range containerList{
+			newContainerMap := v2.(map[string]interface{})
+			if containerMap["name"].(string) == newContainerMap["name"].(string) && containerMap["port"].(float64) == newContainerMap["port"].(float64){
+				deleteSign = false
+				break
+			}
+		}
+
+		if deleteSign{
+			client.SRem(config.REDIS_KEY_PROXY_APP_CONTAINER_HASH + containerMap["app"].(string), ip + ":" + tools.Float64ToString(containerMap["port"].(float64)))
+		}
+	}
+
+	// 绑定应用与后端的映射端口
+	for _, v := range containerList{
+		containerMap := v.(map[string]interface{})
+		redisKey := config.REDIS_KEY_PROXY_APP_CONTAINER_IP_AND_PORT_SET + containerMap["app"].(string)
+		client.SAdd(redisKey, ip + ":" + tools.Float64ToString(containerMap["port"].(float64)))
+	}
+
+	// 更新容器服务器数据
+	client.HSet(config.REDIS_KEY_PROXY_APP_CONTAINER_HASH, ip, containerInfo)
+
 	d := make(map[string]interface{})
+	d["ip"] = ip
 	output(w, httpCode.OkCode, d)
 }
 

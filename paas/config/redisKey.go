@@ -43,3 +43,13 @@ var REDIS_KEY_APP_LIST = "paas_app_list"
  */
 // 一个计划应用分配json字符串（请自行添加）
 var REDIS_KEY_PLAN_CONTAIN_USE_STR = "paas_plan_container_use_"
+
+/*
+反向代理相关
+ */
+// 记录应用与后端ip端口的set（请自行加上appid）
+var REDIS_KEY_PROXY_APP_CONTAINER_IP_AND_PORT_SET = "paas_proxy_app_container_ip_and_port_set"
+// 记录域名与app绑定关系
+var REDIS_KEY_PROXY_DOMAIN_APP_HASH = "paas_proxy_domain_app_hash"
+// 记录当前容器服务器应用与容器映射关系
+var REDIS_KEY_PROXY_APP_CONTAINER_HASH = "paas_proxy_app_container_hash"

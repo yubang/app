@@ -6,6 +6,7 @@ import (
 	"./paas/tools"
 	"./paas/osutil"
 	"./paas/docker"
+	"fmt"
 )
 
 /*
@@ -24,13 +25,13 @@ func loginContainer(){
 }
 
 // 同步计划分配资源与实际分配资源
-func synchronizationAllocation(){
+func synchronizationAllocation()map[string]interface{}{
 	configObj := config.GetPaasConfig()
 	apiUrl := "http://" + configObj.ApiServerConfigData.Ip + ":" + tools.Float64ToString(configObj.ApiServerConfigData.Port) + config.GetOptionContainerTaskAPI
 	obj := tools.Post(apiUrl, url.Values{"token": {configObj.Token}})
 	if obj == nil || obj["code"].(float64) != 0 {
 		tools.Error("拉取操作同步任务失败！")
-		return
+		return nil
 	}
 
 	// 拉取服务器上所有容器
@@ -51,12 +52,16 @@ func synchronizationAllocation(){
 		}
 	}
 
+	// 增减容器存储变量
 	addPopMap := make(map[string]int)
+	// 镜像与app映射map
+	appImageMap := make(map[string]interface{})
 
-	for _, v := range obj["data"].(map[string]interface{}){
+	for k, v := range obj["data"].(map[string]interface{}){
 		// 计算容器需要增加或者减少的次数
 		n := docker.GetATypeOfImageContainerNumber(v.(map[string]interface{})["image"].(string))
 		addPopMap[v.(map[string]interface{})["image"].(string)] = tools.Float64ToInt(v.(map[string]interface{})["num"].(float64)) - n
+		appImageMap[v.(map[string]interface{})["image"].(string)] = k
 	}
 
 	// 处理加减容器
@@ -75,22 +80,37 @@ func synchronizationAllocation(){
 			}
 		}
 	}
+	return appImageMap
 
 }
 
 // 记录容器情况
-func callbackAllocation(){
+func callbackAllocation(appImageMap map[string]interface{}){
 
 	containerList := docker.GetAllContainerList()
-	
+	length := len(containerList)
+	arrs := make([]map[string]interface{}, length)
+	for index := 0;index<length;index++{
+		arrs[index]["imageName"] = containerList[index]["imageName"]
+		arrs[index]["port"] = containerList[index]["port"]
+		arrs[index]["containerId"] = containerList[index]["containerId"]
+		arrs[index]["app"] = appImageMap[arrs[index]["imageName"].(string)]
+	}
 
+	containerInfoBytes := tools.InterfaceListToJson(arrs)
+	containerInfo := tools.ByteListToString(containerInfoBytes)
+
+	// 回调API
+	configObj := config.GetPaasConfig()
+	apiUrl := "http://" + configObj.ApiServerConfigData.Ip + ":" + tools.Float64ToString(configObj.ApiServerConfigData.Port) + config.OptionContainerCallbackAPI
+	r := tools.Post(apiUrl, url.Values{"token": {configObj.Token}, "containerInfo": {containerInfo}})
+	fmt.Print(r)
 }
 
 func main(){
 	loginContainer() // 登记服务器
-	synchronizationAllocation() // 同步资源
-	callbackAllocation() // 记录容器资源
-
+	appImageMap := synchronizationAllocation() // 同步资源
+	callbackAllocation(appImageMap) // 记录容器资源
 	//// 操作容器逻辑
 	//
 	//// 回调结果
