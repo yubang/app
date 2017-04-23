@@ -66,13 +66,7 @@ func synchronizationAllocation()map[string]interface{}{
 
 	// 处理加减容器
 	for k, v := range addPopMap{
-		if v > 0{
-			for index:= v;index >0; index--{
-				// 添加一个容器
-				port := docker.GetAbleUserPort()
-				docker.StartAContainer(k, port, 80)
-			}
-		}else if v < 0{
+		if v < 0{
 			for index:= v;index <0; index++{
 				// 移除一个容器
 				containerId := docker.GetAContainer(k)
@@ -80,6 +74,21 @@ func synchronizationAllocation()map[string]interface{}{
 			}
 		}
 	}
+
+	callbackAllocation(appImageMap) // 记录容器资源
+
+	for k, v := range addPopMap{
+		if v > 0{
+			for index:= v;index >0; index--{
+				// 添加一个容器
+				port := docker.GetAbleUserPort()
+				docker.StartAContainer(k, port, 80)
+			}
+		}
+	}
+
+	callbackAllocation(appImageMap) // 记录容器资源
+
 	return appImageMap
 
 }
@@ -109,8 +118,7 @@ func callbackAllocation(appImageMap map[string]interface{}){
 
 func main(){
 	loginContainer() // 登记服务器
-	appImageMap := synchronizationAllocation() // 同步资源
-	callbackAllocation(appImageMap) // 记录容器资源
+	synchronizationAllocation() // 同步资源
 	//// 操作容器逻辑
 	//
 	//// 回调结果

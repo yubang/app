@@ -6,10 +6,9 @@ paas平台WEB UI模块
  */
 
 import (
-	"./ctsFrame/webTools"
+	"./paas/webUi"
 )
 
 func main(){
-	routes := webTools.GetBlockUrlRouteMap()
-	webTools.StartHttpServer(routes, "127.0.0.1:9000")
+	webUi.StartHttpServer()
 }
