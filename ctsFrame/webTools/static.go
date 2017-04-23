@@ -6,7 +6,6 @@ package webTools
 创建于2017年4月23日
  */
 
-import "net/http"
 import "../fileTools"
 
 /*
@@ -15,13 +14,14 @@ import "../fileTools"
 @param cacheTimeoutSecond: 静态资源缓存时间
 @param w: http.ResponseWriter
  */
-func SendFile(filePath string, cacheTimeoutSecond int, w http.ResponseWriter){
+func SendFile(filePath string, cacheTimeoutSecond int, r HttpRequest)HttpRequest{
 	fileContent := fileTools.ReadFromFile(filePath)
 	if fileContent == nil{
 		// 资源找不到
-		w.WriteHeader(404)
-		return
+		r.StatusCode = 404
+		return r
 	}
-	w.Header().Set("Content-Type", GetContentTypeFromName(filePath))
-	w.Write(fileContent)
+	r.Response.Header().Set("Content-Type", GetContentTypeFromName(filePath))
+	r.ResponseData = fileContent
+	return r
 }

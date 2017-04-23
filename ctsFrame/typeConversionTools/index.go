@@ -2,7 +2,6 @@ package typeConversionTools
 
 import (
 	"strconv"
-	"strings"
 	"errors"
 )
 

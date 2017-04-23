@@ -11,14 +11,34 @@ http服务相关操作
 创建于2017年4月23日
  */
 
+type HttpRequest struct {
+	Request *http.Request
+	Response http.ResponseWriter
+	Session map[string]interface{}
+	StatusCode int
+	ResponseData []byte
+}
+
+type HttpServerInfo struct {
+	RouteMap map[string]func(request HttpRequest)HttpRequest
+	RewriteListList [][]string
+	ErrorFuncMap map[string]func(request HttpRequest)HttpRequest
+	BeforeRequest []func(request HttpRequest)(HttpRequest, bool)
+	AfterRequest []func(request HttpRequest)HttpRequest
+}
+
 /*
 获取一个http服务处理函数
 @param routeMap: 路由map
 @param rewriteListList: rewrite规则
 @return http服务处理函数
  */
-func getHttpHandler(routeMap map[string]func(w http.ResponseWriter, r *http.Request), rewriteListList [][]string) func(w http.ResponseWriter, r *http.Request){
+func getHttpHandler(httpServerInfo HttpServerInfo) func(w http.ResponseWriter, r *http.Request){
 	return func(w http.ResponseWriter, r *http.Request){
+
+		// 变量
+		rewriteListList := httpServerInfo.RewriteListList
+		routeMap := httpServerInfo.RouteMap
 
 		// 标识头
 		w.Header().Set("Server", "ctsFrame1.0")
@@ -37,7 +57,33 @@ func getHttpHandler(routeMap map[string]func(w http.ResponseWriter, r *http.Requ
 			w.Write([]byte("你访问的页面已经被吃掉了！"))
 			return
 		}
-		f(w, r)
+		// 构建request对象
+		request := HttpRequest{r, w, getSession(r), 200, nil}
+
+		// 前置处理
+		var continueSign bool
+		for _, v := range httpServerInfo.BeforeRequest{
+			request, continueSign = v(request)
+			if !continueSign {
+				setSession(request.Response, request.Request, request.Session)
+				w.WriteHeader(request.StatusCode)
+				w.Write(request.ResponseData)
+				return
+			}
+		}
+
+		// 调用路由函数
+		request = f(request)
+
+		// 后置处理
+		for _, v := range httpServerInfo.AfterRequest {
+			request = v(request)
+		}
+
+		// 输出结果
+		setSession(request.Response, request.Request, request.Session)
+		w.WriteHeader(request.StatusCode)
+		w.Write(request.ResponseData)
 	}
 }
 
@@ -48,8 +94,8 @@ func getHttpHandler(routeMap map[string]func(w http.ResponseWriter, r *http.Requ
 @param rewriteListList: rewrite规则
 @return
  */
-func StartHttpServer(routeMap map[string]func(w http.ResponseWriter, r *http.Request), httpAdder string, rewriteListList [][]string){
-	http.HandleFunc("/", getHttpHandler(routeMap, rewriteListList))
+func StartHttpServer(httpAdder string, httpServerInfo HttpServerInfo){
+	http.HandleFunc("/", getHttpHandler(httpServerInfo))
 	http.ListenAndServe(httpAdder, nil)
 }
 

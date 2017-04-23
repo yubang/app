@@ -1,9 +1,9 @@
 package webUi
 
 import (
-	"net/http"
+	"../../ctsFrame/webTools"
 )
 
-var routes = map[string]func(w http.ResponseWriter,r *http.Request){
+var routes = map[string]func(request webTools.HttpRequest)webTools.HttpRequest{
 	"/index.html": indexHtml,
 }

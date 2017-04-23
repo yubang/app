@@ -10,5 +10,9 @@ import "../../ctsFrame/webTools"
 
 
 func StartHttpServer(){
-	webTools.StartHttpServer(routes, "127.0.0.1:8000", rewriteList)
+	errFuncMap := make(map[string]func(request webTools.HttpRequest)webTools.HttpRequest)
+	beforeRequest := []func(request webTools.HttpRequest)(webTools.HttpRequest, bool){}
+	afterRequest := []func(request webTools.HttpRequest)webTools.HttpRequest{}
+	httpServerInfo := webTools.HttpServerInfo{routes, rewriteList, errFuncMap, beforeRequest, afterRequest}
+	webTools.StartHttpServer("127.0.0.1:8000", httpServerInfo)
 }
