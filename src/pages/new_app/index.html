@@ -9,10 +9,10 @@
             <el-input type="textarea" v-model="form.desc"></el-input>
         </el-form-item>
         <el-form-item label="应用域名">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.domain"></el-input>
         </el-form-item>
         <el-form-item label="git地址">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.git"></el-input>
         </el-form-item>
 
         <el-form-item label="容器CPU">
@@ -51,7 +51,7 @@
         </el-form-item>
 
         <el-form-item>
-            <el-button type="primary" >立即创建</el-button>
+            <el-button type="primary" @click="createApp();">立即创建</el-button>
         </el-form-item>
 
     </el-form>

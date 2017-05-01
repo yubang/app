@@ -14,7 +14,7 @@ func Init(ownObj OwnConfigInfo){
 		beforeRequest,
 		afterRequest,
 		cache,
-		ownObj,
+		&ownObj,
 	}
 	obj.StartHttpServer(ownObj.HttpAddr)
 }

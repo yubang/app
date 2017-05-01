@@ -116,7 +116,7 @@ func (httpServerInfo *HttpServerInfo)getHttpHandler() func(w http.ResponseWriter
 		}
 
 		// 构建request对象
-		request := HttpObject{r, w, getSession(r, httpServerInfo.CacheClient), 200, nil, httpServerInfo.CacheClient}
+		request := HttpObject{r, w, getSession(r, httpServerInfo.CacheClient), 200, nil, httpServerInfo.CacheClient, httpServerInfo.OwnObj}
 
 		// 前置处理
 		var continueSign bool

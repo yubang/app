@@ -18,6 +18,7 @@ type HttpObject struct {
 	StatusCode int
 	ResponseData []byte
 	CacheClient cacheTools.CacheClient
+	OwnObj interface{} // 自己的对象，生命周期是进程启动到结束
 }
 
 type HttpServerInfo struct {
@@ -30,7 +31,7 @@ type HttpServerInfo struct {
 	OwnObj interface{} // 自己的对象，生命周期是进程启动到结束
 }
 
-type HttpHandler func(*HttpObject)HttpObject
+type HttpHandler func(*HttpObject)
 type ErrorHandler func(*HttpObject)
 type BeforeRequestHandler func(request *HttpObject)bool
 type AfterRequestHandler func(request *HttpObject)
