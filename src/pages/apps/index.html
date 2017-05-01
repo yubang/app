@@ -2,7 +2,7 @@
 <block name="content">
 
     <p>
-        <el-button type="success">添加应用</el-button>
+        <el-button type="success" @click="app.goto('/admin/web/new-app');">添加应用</el-button>
     </p>
 
     <el-card class="box-card app_info" v-for="app in apps">

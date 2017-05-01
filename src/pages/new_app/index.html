@@ -1,0 +1,59 @@
+<extends src="../base.html" />
+<block name="content">
+
+    <el-form ref="form" :model="form" label-width="80px">
+        <el-form-item label="应用名字">
+            <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="应用描述">
+            <el-input type="textarea" v-model="form.desc"></el-input>
+        </el-form-item>
+        <el-form-item label="应用域名">
+            <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="git地址">
+            <el-input v-model="form.name"></el-input>
+        </el-form-item>
+
+        <el-form-item label="容器CPU">
+            <el-radio-group v-model="form.cpu">
+                <el-radio-button label="1核"></el-radio-button>
+                <el-radio-button label="2核"></el-radio-button>
+                <el-radio-button label="3核"></el-radio-button>
+                <el-radio-button label="4核"></el-radio-button>
+                <el-radio-button label="5核"></el-radio-button>
+            </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="容器内存">
+            <el-radio-group v-model="form.memory">
+                <el-radio-button label="64M"></el-radio-button>
+                <el-radio-button label="128M"></el-radio-button>
+                <el-radio-button label="256M"></el-radio-button>
+                <el-radio-button label="512M"></el-radio-button>
+                <el-radio-button label="1024M"></el-radio-button>
+            </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="容器数量">
+            <el-input-number v-model="form.nums" :min="1" :max="10"></el-input-number>
+        </el-form-item>
+
+        <el-form-item label="应用环境">
+            <el-select v-model="form.image" placeholder="请选择应用环境">
+                <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                </el-option>
+            </el-select>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" >立即创建</el-button>
+        </el-form-item>
+
+    </el-form>
+
+</block>
