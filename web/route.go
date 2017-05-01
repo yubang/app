@@ -13,6 +13,7 @@ import (
 
 var routes = map[string]webTools.HttpHandler{
 	"/admin/api/createApp": createApp,
+	"/admin/api/appList": appList,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -119,4 +120,40 @@ func createApp(r *webTools.HttpObject){
 
 	r.Output(httpCode.OkCode, nil)
 
+}
+
+func appList(obj *webTools.HttpObject){
+
+	page := obj.Request.FormValue("page")
+	if page == ""{
+		page = "1"
+	}
+
+	pageNumber, err := typeConversionTools.StringToInt(page)
+	if err != nil{
+		obj.Output(httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+	// 获取应用数量
+	appNumber, err2 := redisClient.ZCard(REDIS_KEY_APP_ZSET).Result()
+	if err2 != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	// 获取一页应用信息
+	offset := 5
+	index := (pageNumber - 1) * 5
+	arrs, err3 := redisClient.ZRevRange(REDIS_KEY_APP_ZSET, int64(index), int64(index + offset)).Result()
+	if err3 != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	result := map[string]interface{}{
+		"nums": appNumber,
+		"apps": arrs,
+	}
+	obj.Output(httpCode.OkCode, result)
 }
