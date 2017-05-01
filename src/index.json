@@ -1,7 +1,8 @@
 {
   "pages": [
     {"url": "/admin/web/apps", "path": "./pages/apps"},
-    {"url": "/web/html/404", "path": "./pages/404"}
+    {"url": "/web/html/404", "path": "./pages/404"},
+    {"url": "/admin/web/option-app", "path": "./pages/option_app"}
   ],
   "title": "paas平台",
   "components": [

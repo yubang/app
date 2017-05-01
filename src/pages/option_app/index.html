@@ -1,0 +1,93 @@
+<extends src="../base.html" />
+<block name="content">
+
+    <el-card class="box-card">
+        <div slot="header" class="clearfix">
+            <span style="line-height: 36px;">应用信息</span>
+        </div>
+        <div class="text item">
+            <p><strong>应用Id：</strong> abcdef</p>
+            <p><strong>应用名字：</strong> 测试应用A</p>
+            <p><strong>应用描述：</strong> 这是一个小应用！</p>
+            <p><strong>应用环境：</strong> static</p>
+            <p><strong>代码地址：</strong> git@github.com:yubang/ilog.git</p>
+            <p><strong>应用域名：</strong> http://blog.yubangweb.com</p>
+        </div>
+    </el-card>
+    <br>
+
+    <el-card class="box-card">
+        <div slot="header" class="clearfix">
+            <span style="line-height: 36px;">容器信息</span>
+            <el-button style="float: right;" type="primary">更新</el-button>
+        </div>
+        <div class="text item">
+            <el-form ref="form" :model="container" label-width="80px">
+                <el-form-item label="容器数量">
+                    <el-input-number v-model="container.nums" :min="1" :max="10"></el-input-number>
+                </el-form-item>
+                <el-form-item label="容器CPU">
+                    <el-radio-group v-model="container.cpu">
+                        <el-radio-button label="1核"></el-radio-button>
+                        <el-radio-button label="2核"></el-radio-button>
+                        <el-radio-button label="3核"></el-radio-button>
+                        <el-radio-button label="4核"></el-radio-button>
+                        <el-radio-button label="5核"></el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+
+                <el-form-item label="容器内存">
+                    <el-radio-group v-model="container.memory">
+                        <el-radio-button label="64M"></el-radio-button>
+                        <el-radio-button label="128M"></el-radio-button>
+                        <el-radio-button label="256M"></el-radio-button>
+                        <el-radio-button label="512M"></el-radio-button>
+                        <el-radio-button label="1024M"></el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+
+            </el-form>
+        </div>
+    </el-card>
+    <br>
+    <el-card class="box-card">
+        <div slot="header" class="clearfix">
+            <span style="line-height: 36px;">镜像信息</span>
+        </div>
+        <div class="text item">
+
+            <div class="text item">
+                <el-form ref="form" :model="container" label-width="80px">
+                    <el-form-item label="最近镜像">
+                        <el-select v-model="image" placeholder="请选择镜像">
+                            <el-option
+                                    v-for="item in options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="当前镜像">
+                        无，打包于2017年5月1日
+                        &nbsp;&nbsp;&nbsp;
+                        <el-button type="success">代码打包</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+
+        </div>
+    </el-card>
+    <br>
+
+    <el-card class="box-card">
+        <div slot="header" class="clearfix">
+            <span style="line-height: 36px;">应用日志</span>
+        </div>
+        <div class="text item">
+            <p>镜像打包！</p>
+        </div>
+    </el-card>
+
+</block>

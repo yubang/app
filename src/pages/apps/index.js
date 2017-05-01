@@ -6,6 +6,9 @@ app.init({
     methods: {
         currentChange: function(page){
             app.goto("/admin/web/apps?page=" + page);
+        },
+        optionApp: function(appId){
+            app.goto("/admin/web/option-app?appId="+appId);
         }
     }
 })
