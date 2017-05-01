@@ -96,6 +96,15 @@ func Float64ToInt(n float64) int{
 }
 
 /*
+float64 -> int64
+@param n: 待转换参数
+@return int
+ */
+func Float64ToInt64(n float64) int64{
+	return int64(n)
+}
+
+/*
 int64 -> int
 @param n: 待转换参数
 @return int

@@ -1,9 +1,9 @@
-package tools
+package jsonTools
 
 import "encoding/json"
 
 /*
-json处理相关工具类
+json模块封装
 @author: yubang
  */
 

@@ -14,14 +14,14 @@ import "../fileTools"
 @param cacheTimeoutSecond: 静态资源缓存时间
 @param w: http.ResponseWriter
  */
-func SendFile(filePath string, cacheTimeoutSecond int, r HttpRequest)HttpRequest{
+func (r *HttpObject)SendFile(filePath string, cacheTimeoutSecond int){
 	fileContent := fileTools.ReadFromFile(filePath)
 	if fileContent == nil{
 		// 资源找不到
 		r.StatusCode = 404
-		return r
+		return
 	}
 	r.Response.Header().Set("Content-Type", GetContentTypeFromName(filePath))
 	r.ResponseData = fileContent
-	return r
+	return
 }

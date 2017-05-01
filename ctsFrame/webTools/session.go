@@ -2,9 +2,9 @@ package webTools
 
 import "net/http"
 import (
-	"../cacheTools"
 	"time"
 	"../utilTools"
+	"../cacheTools"
 )
 
 /*
@@ -13,19 +13,21 @@ session模块
 创建于2017年4月23日
  */
 
-func getSession(r *http.Request)map[string]interface{}{
+func getSession(r *http.Request, cacheClient cacheTools.CacheClient)map[string]interface{}{
 	cookie, err := r.Cookie("sessionId")
 	if err != nil{
 		return make(map[string]interface{})
 	}
-	d := cacheTools.Get(cookie.Value)
+	d := cacheClient.Get(cookie.Value)
 	if d == nil{
 		return make(map[string]interface{})
 	}
-	return nil
+	return d.(map[string]interface{})
 }
 
-func setSession(w http.ResponseWriter, r *http.Request, sessionMap map[string]interface{}){
+func setSession(request *HttpObject, sessionMap map[string]interface{}){
+	w := request.Response
+	r := request.Request
 	cookie, err := r.Cookie("sessionId")
 
 	COOKIE_MAX_MAX_AGE := time.Hour * 24 / time.Second   // 单位：秒。
@@ -43,8 +45,8 @@ func setSession(w http.ResponseWriter, r *http.Request, sessionMap map[string]in
 	}
 
 	// 记录数据
-	cacheTools.Set(cookie.Value, sessionMap)
-	cacheTools.Expir(cookie.Value, 30 * 60)
+	request.CacheClient.Set(cookie.Value, sessionMap)
+	request.CacheClient.Expir(cookie.Value, 30 * 60)
 
 	http.SetCookie(w, cookie)
 }

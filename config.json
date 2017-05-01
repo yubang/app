@@ -1,17 +1,14 @@
 {
-  "token": "1234567890",
-  "httpProxy": {
-    "ip": "127.0.0.1",
-    "port": 8000
+  "Redis":{
+    "Host": "127.0.0.1",
+    "Port": 6379,
+    "Db": 0,
+    "Password": ""
   },
-  "apiServer":{
-    "ip": "127.0.0.1",
-    "port": 9000
-  },
-  "redis":{
-    "host": "127.0.0.1",
-    "port": 6379,
-    "db": 0,
-    "password": ""
+  "Http":{
+    "Ip": "0.0.0.0",
+    "Port": 8000,
+    "User": "root",
+    "Password": "root"
   }
 }
