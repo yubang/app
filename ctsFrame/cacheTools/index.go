@@ -23,7 +23,7 @@ type RedisClientObject struct {
 }
 
 func (config *RedisClientObject)GetRedisClient()*redis.Client{
-	if config.redisClient.Ping().Err() != nil{
+	if config.redisClient == nil || config.redisClient.Ping().Err() != nil{
 		config.getNewRedisClient()
 	}
 	return config.redisClient

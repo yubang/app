@@ -107,10 +107,6 @@ func (httpServerInfo *HttpServerInfo)getHttpHandler() func(w http.ResponseWriter
 		rewriteListList := httpServerInfo.RewriteListList
 		routeMap := httpServerInfo.RouteMap
 
-		// 标识头
-		w.Header().Set("Server", "ctsFrame1.0")
-		w.Header().Set("golang-server", "true")
-
 		url := stringTools.GetSplitFirstArr(r.RequestURI, "?")
 
 		// 处理rewrite
@@ -118,25 +114,24 @@ func (httpServerInfo *HttpServerInfo)getHttpHandler() func(w http.ResponseWriter
 			tmpList := rewriteListList[index]
 			url = reTools.Replace(tmpList[0], tmpList[1], url)
 		}
-		f := routeMap[url]
-		if f == nil{
-			w.WriteHeader(404)
-			w.Write([]byte("你访问的页面已经被吃掉了！"))
-			fmt.Print(r.Method + " " + r.RequestURI + "【404】\n")
-			return
-		}
+
 		// 构建request对象
 		request := HttpObject{r, w, getSession(r, httpServerInfo.CacheClient), 200, nil, httpServerInfo.CacheClient}
+
+		f := routeMap[url]
+		if f == nil{
+			request.StatusCode = 404
+			request.ResponseData = []byte("你访问的页面已经被吃掉了！")
+			outputData(&request)
+			return
+		}
 
 		// 前置处理
 		var continueSign bool
 		for _, v := range httpServerInfo.BeforeRequest{
 			continueSign = v(&request)
 			if !continueSign {
-				setSession(&request, request.Session)
-				w.WriteHeader(request.StatusCode)
-				w.Write(request.ResponseData)
-				fmt.Print(r.Method + " " + r.RequestURI + "【" + typeConversionTools.IntToString(request.StatusCode) + "】\n")
+				outputData(&request)
 				return
 			}
 		}
@@ -150,11 +145,20 @@ func (httpServerInfo *HttpServerInfo)getHttpHandler() func(w http.ResponseWriter
 		}
 
 		// 输出结果
-		setSession(&request, request.Session)
-		w.WriteHeader(request.StatusCode)
-		w.Write(request.ResponseData)
+		outputData(&request)
 
-		fmt.Print(r.Method + " " + r.RequestURI + "【" + typeConversionTools.IntToString(request.StatusCode) + "】\n")
+
 
 	}
+}
+
+
+func outputData(r *HttpObject){
+	setSession(r, r.Session)
+	// 标识头
+	r.Response.Header().Set("Server", "ctsFrame1.0")
+	r.Response.Header().Set("golang-server", "true")
+	r.Response.WriteHeader(r.StatusCode)
+	r.Response.Write(r.ResponseData)
+	fmt.Print("【" + typeConversionTools.IntToString(r.StatusCode) + "】 " + r.Request.Method + " " + r.Request.RequestURI + "\n")
 }

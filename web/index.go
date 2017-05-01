@@ -3,10 +3,9 @@ package web
 import "../ctsFrame/webTools"
 import "../ctsFrame/cacheTools"
 
-func Init(){
+func Init(ownObj OwnConfigInfo){
 
-	redisObject := cacheTools.GetRedisClientObject(map[string]interface{}{})
-	cache := cacheTools.CacheClient{"session_", redisObject}
+	cache := cacheTools.CacheClient{"session_", ownObj.RedisObject}
 
 	obj := webTools.HttpServerInfo{
 		routes,
@@ -15,7 +14,7 @@ func Init(){
 		beforeRequest,
 		afterRequest,
 		cache,
-		nil,
+		ownObj,
 	}
-	obj.StartHttpServer(":8000")
+	obj.StartHttpServer(ownObj.HttpAddr)
 }
