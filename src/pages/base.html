@@ -1,0 +1,18 @@
+<el-menu theme="dark" :default-active="1" class="el-menu-demo">
+    <el-menu-item index="1">Paas管理后台</el-menu-item>
+</el-menu>
+
+<br>
+
+<el-row class="tac">
+    <el-col :span="4">
+        <el-menu default-active="1" class="el-menu-vertical-demo">
+            <el-menu-item index="1"><i class="el-icon-menu"></i>应用管理</el-menu-item>
+        </el-menu>
+    </el-col>
+    <el-col :span="1">&nbsp;</el-col>
+    <el-col :span="18">
+        <block name="content"></block>
+    </el-col>
+    <el-col :span="1">&nbsp;</el-col>
+</el-row>

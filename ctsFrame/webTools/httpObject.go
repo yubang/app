@@ -118,14 +118,6 @@ func (httpServerInfo *HttpServerInfo)getHttpHandler() func(w http.ResponseWriter
 		// 构建request对象
 		request := HttpObject{r, w, getSession(r, httpServerInfo.CacheClient), 200, nil, httpServerInfo.CacheClient}
 
-		f := routeMap[url]
-		if f == nil{
-			request.StatusCode = 404
-			request.ResponseData = []byte("你访问的页面已经被吃掉了！")
-			outputData(&request)
-			return
-		}
-
 		// 前置处理
 		var continueSign bool
 		for _, v := range httpServerInfo.BeforeRequest{
@@ -134,6 +126,14 @@ func (httpServerInfo *HttpServerInfo)getHttpHandler() func(w http.ResponseWriter
 				outputData(&request)
 				return
 			}
+		}
+
+		f := routeMap[url]
+		if f == nil{
+			request.StatusCode = 404
+			request.ResponseData = []byte("你访问的页面已经被吃掉了！")
+			outputData(&request)
+			return
 		}
 
 		// 调用路由函数

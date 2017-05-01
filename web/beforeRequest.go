@@ -1,8 +1,10 @@
 package web
 
-import "../ctsFrame/webTools"
-import "../ctsFrame/stringTools"
-import "../ctsFrame/reTools"
+import (
+	"../ctsFrame/reTools"
+	"../ctsFrame/stringTools"
+	"../ctsFrame/webTools"
+)
 
 
 var beforeRequest = []webTools.BeforeRequestHandler{
@@ -15,6 +17,11 @@ func handleStatic(r *webTools.HttpObject)bool{
 
 	if reTools.Match("^/static/.*", url){
 		r.SendFile("." + url, 0)
+		return false
+	}
+
+	if reTools.Match("^/admin/web/.*", url){
+		r.SendFile("./index.html", 0)
 		return false
 	}
 

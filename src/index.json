@@ -1,0 +1,17 @@
+{
+  "pages": [
+    {"url": "/admin/web/apps", "path": "./pages/apps"},
+    {"url": "/web/html/404", "path": "./pages/404"}
+  ],
+  "title": "paas平台",
+  "components": [
+  ],
+  "404": "/web/html/404",
+  "own_css_list": [
+    "https://cdn.bootcss.com/element-ui/1.2.8/theme-default/index.css"
+  ],
+  "own_js_list": [
+    "https://cdn.bootcss.com/element-ui/1.2.8/index.js",
+    "https://cdn.bootcss.com/qrcode-generator/1.2.0/qrcode.min.js"
+  ]
+}
