@@ -2,6 +2,7 @@
   "pages": [
     {"url": "/admin/web/apps", "path": "./pages/apps"},
     {"url": "/web/html/404", "path": "./pages/404"},
+    {"url": "/web/html/500", "path": "./pages/500"},
     {"url": "/admin/web/option-app", "path": "./pages/option_app"},
     {"url": "/admin/web/new-app", "path": "./pages/new_app"},
     {"url": "/admin/web/login", "path": "./pages/login"}

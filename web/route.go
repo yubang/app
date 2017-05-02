@@ -522,5 +522,7 @@ func login(obj *webTools.HttpObject){
 		return
 	}
 
+	obj.Session["admin"] = timeTools.GetNowTime("%Y-%m-%d %H:%M:%S")
+
 	obj.Output(httpCode.OkCode, "登录成功！")
 }

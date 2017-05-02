@@ -21,7 +21,9 @@ app.init({
               logs: obj["logs"],
               imageMessage: ""
           }
-      }
+      },
+        before_success: beforeHandleAjx,
+        error:handleError
     },
     methods: {
         optioneContauiner: function(){

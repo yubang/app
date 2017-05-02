@@ -7,3 +7,15 @@ function exitAccount() {
         app.goto("/admin/web/login");
     });
 }
+
+function beforeHandleAjx(data){
+    if(data["code"] == 10005){
+        app.goto("/admin/web/login");
+        return false;
+    }
+    return true;
+}
+
+function handleError(data){
+    app.goto("/web/html/500");
+}

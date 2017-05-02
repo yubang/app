@@ -11,7 +11,9 @@ app.init({
               },
               options: data['data']
           };
-      }
+      },
+        before_success: beforeHandleAjx,
+        error:handleError
     },
     methods: {
         createApp: function(){

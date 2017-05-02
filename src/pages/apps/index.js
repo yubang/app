@@ -8,7 +8,9 @@ app.init({
                 currentPage: parseInt(app.get_args("page") || 1),
                 totalPage: data["data"].nums
             }
-        }
+        },
+        before_success: beforeHandleAjx,
+        error:handleError
     },
     data: {
         apps: [1, 2, 3, 4, 5],
