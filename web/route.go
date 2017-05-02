@@ -18,6 +18,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/deleteApp": deleteApp,
 	"/admin/api/appInfo": appInfo,
 	"/admin/api/updateAppContainerInfo": updateAppContainerInfo,
+	"/admin/api/buildImage": buildImage,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -30,6 +31,10 @@ func createApp(r *webTools.HttpObject){
 	memory := r.Request.FormValue("memory")
 	nums := r.Request.FormValue("nums")
 	image := r.Request.FormValue("image")
+
+	testImageName := "paas_test"
+	testImageCreateTime := timeTools.GetNowTime("%Y-%m-%d %H:%M:%S")
+	testImageAbout := "paas平台初始化测试镜像"
 
 	// 检查参数
 	if name == "" || desc == "" || domain == "" || git == "" || cpu == "" || memory == "" || nums == ""{
@@ -56,14 +61,15 @@ func createApp(r *webTools.HttpObject){
 	redisClient := r.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
 
 	// 获取一个可用端口
-	var port int
+	port := rand.Intn(10000) + 30000
 	portSign := false
-	for index:=0;index<10;index++{
-		port = rand.Intn(10000) + 30000
+	for index:=0;index<10000;index++{
 		i, _ := redisClient.SAdd(REDIS_KEY_POST_USE, port).Result()
 		if i != 0{
 			portSign = true
+			break
 		}
+		port++
 	}
 
 	if !portSign{
@@ -136,17 +142,17 @@ func createApp(r *webTools.HttpObject){
 		return
 	}
 	// 写入一些固定默认值
-	if redisClient.HSet(hsetKey, "nowImageName", "").Err() != nil{
+	if redisClient.HSet(hsetKey, "nowImageName", testImageName).Err() != nil{
 		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
-	if redisClient.HSet(hsetKey, "nowImageCreateTime", "").Err() != nil{
+	if redisClient.HSet(hsetKey, "nowImageCreateTime", testImageCreateTime).Err() != nil{
 		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
-	if redisClient.HSet(hsetKey, "nowImageStatus", "0").Err() != nil{
+	if redisClient.HSet(hsetKey, "nowImageStatus", "1").Err() != nil{
 		// 0为没有镜像，1为镜像打包成功，2为镜像打包中，3为镜像打包失败
 		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
@@ -159,8 +165,18 @@ func createApp(r *webTools.HttpObject){
 		"content": "应用创建成功！",
 		"time": timeTools.GetNowTime("%Y-%m-%d %H:%M:%S"),
 	})).Err() != nil{
-		// 0为没有镜像，1为镜像打包成功，2为镜像打包中，3为镜像打包失败
 		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
+		r.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// 默认使用测试镜像
+	newImage := jsonTools.InterfaceToJson(map[string]interface{}{
+		"imageName": testImageName,
+		"imageCreateTime": testImageCreateTime,
+		"imageAbout": testImageAbout,
+	})
+	if redisClient.LPush(REDIS_KEY_APP_IMAGE_LIST+appId, newImage).Err() != nil{
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
@@ -279,6 +295,13 @@ func deleteApp(obj *webTools.HttpObject){
 		return
 	}
 
+	// 删除应用镜像
+	// todo: 删除仓库镜像
+	if redisClient.Del(REDIS_KEY_APP_IMAGE_LIST+appId).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
 	// 从应用列表移除
 	if redisClient.ZRem(REDIS_KEY_APP_ZSET, appId).Err() != nil{
 		obj.Output(httpCode.ServerErrorCode, nil)
@@ -313,10 +336,18 @@ func appInfo(obj *webTools.HttpObject){
 		logList[index] = jsonTools.JsonToInterface([]byte(v))
 	}
 
+	// 拉取应用所有打包镜像
+	images, err3 := redisClient.LRange(REDIS_KEY_APP_IMAGE_LIST+appId, 0, -1).Result()
+	if err3 != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
 	result := map[string]interface{}{
 		"appInfo": appInfo,
 		"appId": appId,
 		"logs": logList,
+		"images": images,
 	}
 
 	obj.Output(httpCode.OkCode, result)
@@ -348,7 +379,7 @@ func updateAppContainerInfo(obj *webTools.HttpObject){
 		obj.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
-	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "memeory", memory).Err() != nil{
+	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "memory", memory).Err() != nil{
 		obj.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
@@ -368,4 +399,43 @@ func updateAppContainerInfo(obj *webTools.HttpObject){
 	redisClient.LPush(REDIS_KEY_APP_LOG_LIST+appId, log)
 
 	obj.Output(httpCode.OkCode, "更新应用配置成功！")
+}
+
+// 打包镜像
+func buildImage(obj *webTools.HttpObject){
+
+	appId := obj.Request.FormValue("appId")
+
+	// todo: 拉取代码，生成docker image
+	imageName := utilTools.GetToken32()
+	imageCreateTime := timeTools.GetNowTime("%Y-%m-%d %H:%M:%S")
+	imageAbout := obj.Request.FormValue("imageAbout")
+	image := jsonTools.InterfaceToJson(map[string]interface{}{
+		"imageName": imageName,
+		"imageCreateTime": imageCreateTime,
+		"imageAbout": imageAbout,
+	})
+
+	// 更新信息
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+	if redisClient.LPush(REDIS_KEY_APP_IMAGE_LIST+appId, image).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "nowImageStatus", 2).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// 记录日志
+	log := jsonTools.InterfaceToJson(map[string]interface{}{
+		"type": "info",
+		"content": "申请构建镜像！",
+		"time": timeTools.GetNowTime("%Y-%m-%d %H:%M:%S"),
+	})
+	redisClient.LPush(REDIS_KEY_APP_LOG_LIST+appId, log)
+
+	obj.Output(httpCode.OkCode, "打包镜像操作已经提交！")
+
 }

@@ -60,8 +60,11 @@
 
             <div class="text item">
                 <el-form ref="form" :model="container" label-width="80px">
+                    <el-form-item label="当前镜像">
+                        无，打包于2017年5月1日
+                    </el-form-item>
                     <el-form-item label="最近镜像">
-                        <el-select v-model="image" placeholder="请选择镜像">
+                        <el-select v-model="image" placeholder="请选择镜像" @change="selectImage">
                             <el-option
                                     v-for="item in options"
                                     :key="item.value"
@@ -69,11 +72,23 @@
                                     :value="item.value">
                             </el-option>
                         </el-select>
+                        <el-button type="info">应用镜像</el-button>
+                        <br>
+                        <template v-if="imageMessage != ''">{{imageMessage}}</template>
                     </el-form-item>
-                    <el-form-item label="当前镜像">
-                        无，打包于2017年5月1日
-                        &nbsp;&nbsp;&nbsp;
-                        <el-button type="success">代码打包</el-button>
+                    <el-form-item label="打包镜像">
+                        <template>
+                            <template v-if="app.nowImageStatus == 0">未打包</template>
+                            <template v-else-if="app.nowImageStatus == 1">打包成功</template>
+                            <template v-else-if="app.nowImageStatus == 2">打包中</template>
+                            <template v-else-if="app.nowImageStatus == 3">打包失败</template>
+                        </template>
+                        <template>
+                        <el-button type="success" @click="buildImage();" v-if="app.nowImageStatus == 0">代码打包</el-button>
+                        <el-button type="success" @click="buildImage();" v-else-if="app.nowImageStatus == 1">代码打包</el-button>
+                        <el-button type="success" @click="buildImage();" v-else-if="app.nowImageStatus == 3">代码打包</el-button>
+                        </template>
+
                     </el-form-item>
                 </el-form>
             </div>
