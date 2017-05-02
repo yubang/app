@@ -14,6 +14,7 @@ import (
 var routes = map[string]webTools.HttpHandler{
 	"/admin/api/createApp": createApp,
 	"/admin/api/appList": appList,
+	"/admin/api/deleteApp": deleteApp,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -151,9 +152,62 @@ func appList(obj *webTools.HttpObject){
 		return
 	}
 
+	apps := make([]map[string]string, len(arrs))
+
+	for index, v := range arrs{
+		appInfo, err4 := redisClient.HGetAll(REDIS_KEY_APP_INFO_HSET + v).Result()
+		if err4 != nil{
+			obj.Output(httpCode.ServerErrorCode, nil)
+			return
+		}
+		apps[index] = map[string]string{
+			"appId": v,
+			"name": appInfo["name"],
+			"desc": appInfo["desc"],
+			"image": appInfo["image"],
+			"nums": appInfo["nums"],
+			"cpu": appInfo["cpu"],
+			"memory": appInfo["memory"],
+			"git": appInfo["git"],
+			"domain": appInfo["domain"],
+			"nowImageName": appInfo["nowImageName"] + "" + appInfo["nowImageCreateTime"],
+		}
+	}
+
 	result := map[string]interface{}{
 		"nums": appNumber,
-		"apps": arrs,
+		"apps": apps,
 	}
 	obj.Output(httpCode.OkCode, result)
+}
+
+func deleteApp(obj *webTools.HttpObject){
+
+	appId := obj.Request.FormValue("appId")
+
+	if appId == ""{
+		obj.Output(httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	// 删除应用信息
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+	if redisClient.Del(REDIS_KEY_APP_INFO_HSET + appId).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// 删除应用日志
+	if redisClient.Del(REDIS_KEY_APP_LOG_LIST + appId).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// 从应用列表移除
+	if redisClient.ZRem(REDIS_KEY_APP_ZSET, appId).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	obj.Output(httpCode.OkCode, "移除应用成功！")
 }

@@ -7,20 +7,24 @@
 
     <el-card class="box-card app_info" v-for="app in apps">
         <div class="text item">
-            <p><strong>应用Id：</strong> abcdef</p>
-            <p><strong>应用名字：</strong> 测试应用A</p>
-            <p><strong>应用描述：</strong> 这是一个小应用！</p>
-            <p><strong>应用环境：</strong> static</p>
-            <p><strong>容器个数：</strong> 0</p>
-            <p><strong>应用镜像：</strong> 无</p>
-            <p><strong>代码地址：</strong> git@github.com:yubang/ilog.git</p>
-            <p><strong>应用域名：</strong> http://blog.yubangweb.com</p>
-            <p><strong>CPU：</strong> 1核</p>
-            <p><strong>内存：</strong> 128M</p>
+            <p><strong>应用Id：</strong> {{app.appId}}</p>
+            <p><strong>应用名字：</strong> {{app.name}}</p>
+            <p><strong>应用描述：</strong> {{app.desc}}</p>
+            <p><strong>应用环境：</strong> {{app.image}}</p>
+            <p><strong>容器个数：</strong> {{app.nums}}</p>
+            <p><strong>应用镜像：</strong>
+
+                <template v-if="app.nowImageName != ''">{{app.nowImageName}}</template>
+                <template v-else>无</template>
+            </p>
+            <p><strong>代码地址：</strong> {{app.git}}</p>
+            <p><strong>应用域名：</strong> {{app.domain}}</p>
+            <p><strong>CPU：</strong> {{app.cpu}}</p>
+            <p><strong>内存：</strong> {{app.memory}}</p>
             <p>
-                <el-button type="info" @click="optionApp('abc');">操作应用</el-button>
+                <el-button type="info" @click="optionApp(app.appId);">操作应用</el-button>
                 &nbsp;
-                <el-button type="danger">删除应用</el-button>
+                <el-button type="danger" @click="deleteApp(app.appId);">删除应用</el-button>
             </p>
         </div>
     </el-card>
