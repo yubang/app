@@ -47,23 +47,31 @@ func UnicodeIndex(str,substr string) int {
 }
 
 // 字符串截取
-func SubString(str string,begin,length int) (substr string) {
-	// 将字符串的转换成[]rune
+func SubString(str string, start, length int) (substr string) {
 	rs := []rune(str)
-	lth := len(rs)
+	rl := len(rs)
+	end := 0
 
-	// 简单的越界判断
-	if begin < 0 {
-		begin = 0
+	if start < 0 {
+		start = rl - 1 + start
 	}
-	if begin >= lth {
-		begin = lth
-	}
-	end := begin + length
-	if end > lth {
-		end = lth
+	end = start + length
+
+	if start > end {
+		start, end = end, start
 	}
 
-	// 返回子串
-	return string(rs[begin:end])
+	if start < 0 {
+		start = 0
+	}
+	if start > rl {
+		start = rl
+	}
+	if end < 0 {
+		end = 0
+	}
+	if end > rl {
+		end = rl
+	}
+	return string(rs[start:end])
 }

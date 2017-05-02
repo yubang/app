@@ -9,12 +9,14 @@ import (
 	"github.com/go-redis/redis"
 	"../ctsFrame/jsonTools"
 	"../ctsFrame/utilTools"
+	"math/rand"
 )
 
 var routes = map[string]webTools.HttpHandler{
 	"/admin/api/createApp": createApp,
 	"/admin/api/appList": appList,
 	"/admin/api/deleteApp": deleteApp,
+	"/admin/api/appInfo": appInfo,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -35,7 +37,7 @@ func createApp(r *webTools.HttpObject){
 	}
 
 	// 检查参数类型是否存在问题
-	cpu = stringTools.SubString(cpu, 0, len(cpu) - 1)
+	cpu = stringTools.SubString(cpu, 0, (len(cpu)/2) - 1)
 	memory = stringTools.SubString(memory, 0, len(memory) - 1)
 	numsInt, err := typeConversionTools.StringToInt(nums)
 	if err != nil{
@@ -52,51 +54,100 @@ func createApp(r *webTools.HttpObject){
 	// 获取redis实例
 	redisClient := r.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
 
+	// 获取一个可用端口
+	var port int
+	portSign := false
+	for index:=0;index<10;index++{
+		port = rand.Intn(10000) + 30000
+		i, _ := redisClient.SAdd(REDIS_KEY_POST_USE, port).Result()
+		if i != 0{
+			portSign = true
+		}
+	}
+
+	if !portSign{
+		r.Output(httpCode.MessageErrorCode, "没有可用端口！")
+		return
+	}
+
+	// 关联应用和域名
+	if redisClient.HGet(REDIS_KEY_DOMAIN_APP_HSET, domain).Err() != redis.Nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
+		r.Output(httpCode.MessageErrorCode, "域名已经被绑定！")
+		return
+	}
+	if redisClient.HSet(REDIS_KEY_APP_DOMAIN_HSET, appId, domain).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
+		r.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.HSet(REDIS_KEY_DOMAIN_APP_HSET, domain, appId).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
+		r.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
 	// 写入hset，保存应用相关信息
 	hsetKey := REDIS_KEY_APP_INFO_HSET + appId
 	if redisClient.HSet(hsetKey, "name", name).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "desc", desc).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "domain", domain).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "git", git).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "cpu", cpu).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "memory", memory).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "nums", numsInt).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "image", image).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
+		r.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.HSet(hsetKey, "port", port).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	// 写入一些固定默认值
 	if redisClient.HSet(hsetKey, "nowImageName", "").Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "nowImageCreateTime", "").Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
 	if redisClient.HSet(hsetKey, "nowImageStatus", "0").Err() != nil{
 		// 0为没有镜像，1为镜像打包成功，2为镜像打包中，3为镜像打包失败
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
@@ -108,6 +159,7 @@ func createApp(r *webTools.HttpObject){
 		"time": timeTools.GetNowTime("%Y-%m-%d %H:%M:%S"),
 	})).Err() != nil{
 		// 0为没有镜像，1为镜像打包成功，2为镜像打包中，3为镜像打包失败
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
@@ -115,6 +167,7 @@ func createApp(r *webTools.HttpObject){
 
 	// 写入zset，只写入appid
 	if redisClient.ZAdd(REDIS_KEY_APP_ZSET, redis.Z{float64(power), appId}).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
@@ -203,6 +256,28 @@ func deleteApp(obj *webTools.HttpObject){
 		return
 	}
 
+	// 删除域名
+	domain, _ := redisClient.HGet(REDIS_KEY_APP_DOMAIN_HSET, appId).Result()
+	if redisClient.HDel(REDIS_KEY_DOMAIN_APP_HSET, domain).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.HDel(REDIS_KEY_APP_DOMAIN_HSET, appId).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// 删除端口占用
+	port, err := redisClient.HGet(REDIS_KEY_APP_INFO_HSET + appId, "port").Result()
+	if err != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.SRem(REDIS_KEY_POST_USE, port).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
 	// 从应用列表移除
 	if redisClient.ZRem(REDIS_KEY_APP_ZSET, appId).Err() != nil{
 		obj.Output(httpCode.ServerErrorCode, nil)
@@ -210,4 +285,38 @@ func deleteApp(obj *webTools.HttpObject){
 	}
 
 	obj.Output(httpCode.OkCode, "移除应用成功！")
+}
+
+func appInfo(obj *webTools.HttpObject){
+
+	appId := obj.Request.FormValue("appId")
+
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+
+	// 获取应用相关信息
+	appInfo, err := redisClient.HGetAll(REDIS_KEY_APP_INFO_HSET + appId).Result()
+	if err != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// 拉取所有应用日志
+	logs, err2 := redisClient.LRange(REDIS_KEY_APP_LOG_LIST+appId, 0, -1).Result()
+	if err2 != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	logList := make([]map[string]interface{}, len(logs))
+	for index, v := range logs{
+		logList[index] = jsonTools.JsonToInterface([]byte(v))
+	}
+
+	result := map[string]interface{}{
+		"appInfo": appInfo,
+		"appId": appId,
+		"logs": logList,
+	}
+
+	obj.Output(httpCode.OkCode, result)
 }

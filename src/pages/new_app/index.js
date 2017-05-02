@@ -66,7 +66,7 @@ app.init({
                         message: '创建应用成功！',
                         type: 'success'
                     });
-                    setTimeout(function(){app.goto("/admin/web/apps");}, 2000);
+                    setTimeout(function(){app.goto("/admin/web/apps");}, 200);
                 }else{
                     that.$message.error(data["msg"]);
                 }

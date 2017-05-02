@@ -19,3 +19,4 @@ var ServerErrorCode = HttpCode{10004, "服务器内部错误"}
 var NeedLoginCode = HttpCode{10005, "需要登录"}
 var StopCode = HttpCode{10006, "越权操作"}
 var PowerErrorCode = HttpCode{10007, "权限错误"}
+var MessageErrorCode = HttpCode{10008, "提交信息不符合错误"}
