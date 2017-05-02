@@ -15,9 +15,33 @@ app.init({
           }
       }
     },
-    data:{
-        container: {"nums": 1, cpu: "1核", "memory": "64M"},
-        options: [{"value": "adhuehfee", "label": "erfre"}],
-        image: ""
+    methods: {
+        optioneContauiner: function(){
+            var that = this;
+            $.post("/admin/api/updateAppContainerInfo", {
+                "appId": app.get_args("appId"),
+                "memory": that.container.memory.substring(0, that.container.memory.length-1),
+                "cpu": that.container.cpu.substring(0, that.container.cpu.length-1),
+                "nums": that.container.nums
+            }, function(data){
+                if(data["code"]==0){
+                    that.$message({
+                        message: data["data"],
+                        type: 'success'
+                    });
+                    app.reload();
+                }else{
+                    that.$message({
+                        message: data['msg'],
+                        type: 'error'
+                    });
+                }
+            }).error(function(){
+                that.$message({
+                    message: "服务器未知错误！",
+                    type: 'error'
+                });
+            });
+        }
     }
 })

@@ -17,6 +17,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/appList": appList,
 	"/admin/api/deleteApp": deleteApp,
 	"/admin/api/appInfo": appInfo,
+	"/admin/api/updateAppContainerInfo": updateAppContainerInfo,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -319,4 +320,52 @@ func appInfo(obj *webTools.HttpObject){
 	}
 
 	obj.Output(httpCode.OkCode, result)
+}
+
+func updateAppContainerInfo(obj *webTools.HttpObject){
+
+	appId := obj.Request.FormValue("appId")
+	nums := obj.Request.FormValue("nums")
+	cpu := obj.Request.FormValue("cpu")
+	memory := obj.Request.FormValue("memory")
+
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+
+	// 检查参数是否完整
+	if appId == "" || nums == "" || cpu == "" || memory == ""{
+		obj.Output(httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	// 判断参数类型是否正确
+	if !typeConversionTools.IsNumber(nums) || !typeConversionTools.IsNumber(cpu) || !typeConversionTools.IsNumber(memory){
+		obj.Output(httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	// 更新信息
+	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "cpu", cpu).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "memeory", memory).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "nums", nums).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// todo: 调用docker service update
+
+	// 记录日志
+	log := jsonTools.InterfaceToJson(map[string]interface{}{
+		"type": "info",
+		"content": "应用配置变更为，容器：" + nums + "个，cpu："+ cpu + "核，内存："+memory+"M",
+		"time": timeTools.GetNowTime("%Y-%m-%d %H:%M:%S"),
+	})
+	redisClient.LPush(REDIS_KEY_APP_LOG_LIST+appId, log)
+
+	obj.Output(httpCode.OkCode, "更新应用配置成功！")
 }

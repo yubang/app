@@ -21,7 +21,7 @@
     <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span style="line-height: 36px;">容器信息</span>
-            <el-button style="float: right;" type="primary">更新</el-button>
+            <el-button style="float: right;" type="primary" @click="optioneContauiner();">更新</el-button>
         </div>
         <div class="text item">
             <el-form ref="form" :model="container" label-width="80px">
@@ -87,7 +87,7 @@
         <div slot="header" class="clearfix">
             <span style="line-height: 36px;">应用日志</span>
         </div>
-        <div class="text item">
+        <div class="text item log">
             <el-alert v-for="log in logs"
                     :title="'【' + log.time + '】   ' + log.content"
                     :type="log.type"

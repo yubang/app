@@ -3,6 +3,7 @@ package typeConversionTools
 import (
 	"strconv"
 	"errors"
+	"../reTools"
 )
 
 /*
@@ -111,4 +112,9 @@ int64 -> int
  */
 func Int64ToInt(n int64)int{
 	return int(n)
+}
+
+
+func IsNumber(s string)bool{
+	return reTools.Match("\\d+[.]?\\d*", s)
 }
