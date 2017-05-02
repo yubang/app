@@ -16,11 +16,17 @@ func main(){
 		image[k] = v.(string)
 	}
 
+	adminUser := web.AdminAccountStruct{
+		obj["Admin"].(map[string]interface{})["Username"].(string),
+		obj["Admin"].(map[string]interface{})["Password"].(string),
+	}
+
 	redisObject := cacheTools.GetRedisClientObject(map[string]interface{}{})
 	config := web.OwnConfigInfo{
 		":8000",
 		redisObject,
 		image,
+		adminUser,
 	}
 	web.Init(config)
 

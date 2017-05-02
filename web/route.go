@@ -21,6 +21,8 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/buildImage": buildImage,
 	"/admin/api/useImage": useImage,
 	"/admin/api/getAddMessage": getAddMessage,
+	"/admin/api/exit": exitAccount,
+	"/admin/api/login": login,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -500,4 +502,25 @@ func getAddMessage(obj *webTools.HttpObject){
 		index++
 	}
 	obj.Output(httpCode.OkCode, d)
+}
+
+// 退出登录
+func exitAccount(obj *webTools.HttpObject){
+	delete(obj.Session, "admin")
+	obj.Output(httpCode.OkCode, nil)
+}
+
+// 登录管理后台
+func login(obj *webTools.HttpObject){
+
+	username := obj.Request.FormValue("username")
+	password := obj.Request.FormValue("password")
+
+	info := obj.OwnObj.(*OwnConfigInfo).AdminAccount
+	if username != info.Username || password != info.Password{
+		obj.Output(httpCode.UserOrPasswordErrorCode, "用户名或密码错误！")
+		return
+	}
+
+	obj.Output(httpCode.OkCode, "登录成功！")
 }

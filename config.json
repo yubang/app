@@ -17,5 +17,9 @@
     "php7": "paas_base_php7_v1",
     "golang": "paas_base_golang_v1",
     "nodejs": "paas_base_nodejs_v1"
+  },
+  "Admin":{
+    "Username": "root",
+    "Password": "root"
   }
 }

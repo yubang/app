@@ -61,7 +61,7 @@
             <div class="text item">
                 <el-form ref="form" :model="container" label-width="80px">
                     <el-form-item label="当前镜像">
-                        {{app.nowImageAbount}}，打包于{{app.nowImageCreateTime}}
+                        {{app.nowImageAbout}}，打包于{{app.nowImageCreateTime}}
                     </el-form-item>
                     <el-form-item label="最近镜像">
                         <el-select v-model="image" placeholder="请选择镜像" @change="selectImage">

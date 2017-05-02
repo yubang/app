@@ -2,10 +2,16 @@ package web
 
 import "../ctsFrame/cacheTools"
 
+type AdminAccountStruct struct {
+	Username string
+	Password string
+}
+
 type OwnConfigInfo struct {
 	HttpAddr string
 	RedisObject cacheTools.RedisClientObject
 	ImageMap map[string]string
+	AdminAccount AdminAccountStruct
 }
 
 // REDIS KEY
