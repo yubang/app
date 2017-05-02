@@ -5,6 +5,7 @@ import "../ctsFrame/cacheTools"
 type OwnConfigInfo struct {
 	HttpAddr string
 	RedisObject cacheTools.RedisClientObject
+	ImageMap map[string]string
 }
 
 // REDIS KEY

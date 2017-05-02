@@ -20,6 +20,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/updateAppContainerInfo": updateAppContainerInfo,
 	"/admin/api/buildImage": buildImage,
 	"/admin/api/useImage": useImage,
+	"/admin/api/getAddMessage": getAddMessage,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -486,4 +487,17 @@ func useImage(obj *webTools.HttpObject){
 	redisClient.LPush(REDIS_KEY_APP_LOG_LIST+appId, log)
 
 	obj.Output(httpCode.OkCode, "使用新镜像成功！")
+}
+
+func getAddMessage(obj *webTools.HttpObject){
+	d := make([]map[string]string, len(obj.OwnObj.(*OwnConfigInfo).ImageMap))
+	index := 0
+	for k, _ := range obj.OwnObj.(*OwnConfigInfo).ImageMap{
+		d[index] = map[string]string{
+			"label": k,
+			"value": k,
+		}
+		index++
+	}
+	obj.Output(httpCode.OkCode, d)
 }

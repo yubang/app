@@ -10,5 +10,12 @@
     "Port": 8000,
     "User": "root",
     "Password": "root"
+  },
+  "Image":{
+    "static": "paas_base_static_v1",
+    "python2.7": "paas_base_python27_v1",
+    "php7": "paas_base_php7_v1",
+    "golang": "paas_base_golang_v1",
+    "nodejs": "paas_base_nodejs_v1"
   }
 }

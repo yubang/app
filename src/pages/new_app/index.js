@@ -1,12 +1,17 @@
 app.init({
-    data: {
-        form: {
-            image: "static",
-            memory: "64M",
-            cpu: "1核",
-            nums: 1
-        },
-        options: [{label: "静态资源环境", value: "static"}]
+    api: {
+      url: "/admin/api/getAddMessage",
+      success: function(data){
+          return {
+              form: {
+                  image: "",
+                  memory: "64M",
+                  cpu: "1核",
+                  nums: 1
+              },
+              options: data['data']
+          };
+      }
     },
     methods: {
         createApp: function(){
@@ -50,6 +55,15 @@ app.init({
                 });
                 return ;
             }
+
+            if(!$.trim(image)){
+                this.$message({
+                    message: '应用环境不能为空！',
+                    type: 'warning'
+                });
+                return ;
+            }
+
             var that = this;
             $.post("/admin/api/createApp", {
                 name: name,
