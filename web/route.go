@@ -152,6 +152,11 @@ func createApp(r *webTools.HttpObject){
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
+	if redisClient.HSet(hsetKey, "nowImageAbount", testImageAbout).Err() != nil{
+		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
+		r.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
 	if redisClient.HSet(hsetKey, "nowImageStatus", "1").Err() != nil{
 		// 0为没有镜像，1为镜像打包成功，2为镜像打包中，3为镜像打包失败
 		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
@@ -256,55 +261,54 @@ func deleteApp(obj *webTools.HttpObject){
 	appId := obj.Request.FormValue("appId")
 
 	if appId == ""{
-		obj.Output(httpCode.ParameterMissingCode, nil)
+		obj.Output(httpCode.ParameterMissingCode, -1)
 		return
 	}
 
 	// 删除应用信息
 	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
 	if redisClient.Del(REDIS_KEY_APP_INFO_HSET + appId).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
+		obj.Output(httpCode.ServerErrorCode, -2)
 		return
 	}
 
 	// 删除应用日志
 	if redisClient.Del(REDIS_KEY_APP_LOG_LIST + appId).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
+		obj.Output(httpCode.ServerErrorCode, -3)
 		return
 	}
 
 	// 删除域名
 	domain, _ := redisClient.HGet(REDIS_KEY_APP_DOMAIN_HSET, appId).Result()
 	if redisClient.HDel(REDIS_KEY_DOMAIN_APP_HSET, domain).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
+		obj.Output(httpCode.ServerErrorCode, -4)
 		return
 	}
 	if redisClient.HDel(REDIS_KEY_APP_DOMAIN_HSET, appId).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
+		obj.Output(httpCode.ServerErrorCode, -5)
 		return
 	}
 
 	// 删除端口占用
 	port, err := redisClient.HGet(REDIS_KEY_APP_INFO_HSET + appId, "port").Result()
-	if err != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
-		return
+	if err == nil{
+		if redisClient.SRem(REDIS_KEY_POST_USE, port).Err() != nil{
+			obj.Output(httpCode.ServerErrorCode, -7)
+			return
+		}
 	}
-	if redisClient.SRem(REDIS_KEY_POST_USE, port).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
-		return
-	}
+
 
 	// 删除应用镜像
 	// todo: 删除仓库镜像
 	if redisClient.Del(REDIS_KEY_APP_IMAGE_LIST+appId).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
+		obj.Output(httpCode.ServerErrorCode, -8)
 		return
 	}
 
 	// 从应用列表移除
 	if redisClient.ZRem(REDIS_KEY_APP_ZSET, appId).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
+		obj.Output(httpCode.ServerErrorCode, -9)
 		return
 	}
 
