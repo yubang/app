@@ -19,6 +19,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/appInfo": appInfo,
 	"/admin/api/updateAppContainerInfo": updateAppContainerInfo,
 	"/admin/api/buildImage": buildImage,
+	"/admin/api/useImage": useImage,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -152,7 +153,7 @@ func createApp(r *webTools.HttpObject){
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
 	}
-	if redisClient.HSet(hsetKey, "nowImageAbount", testImageAbout).Err() != nil{
+	if redisClient.HSet(hsetKey, "nowImageAbout", testImageAbout).Err() != nil{
 		redisClient.SRem(REDIS_KEY_POST_USE, port) // 删除端口占用
 		r.Output(httpCode.ServerErrorCode, nil)
 		return
@@ -245,7 +246,7 @@ func appList(obj *webTools.HttpObject){
 			"memory": appInfo["memory"],
 			"git": appInfo["git"],
 			"domain": appInfo["domain"],
-			"nowImageName": appInfo["nowImageName"] + "" + appInfo["nowImageCreateTime"],
+			"nowImageName": appInfo["nowImageAbout"] + "，打包于" + appInfo["nowImageCreateTime"],
 		}
 	}
 
@@ -442,4 +443,47 @@ func buildImage(obj *webTools.HttpObject){
 
 	obj.Output(httpCode.OkCode, "打包镜像操作已经提交！")
 
+}
+
+// 使用镜像
+func useImage(obj *webTools.HttpObject){
+
+	appId := obj.Request.FormValue("appId")
+	imageName := obj.Request.FormValue("imageName")
+	imageTime := obj.Request.FormValue("imageTime")
+	imageAbout := obj.Request.FormValue("imageAbout")
+
+	// 检查参数
+	if appId == "" || imageName == "" || imageTime == "" || imageAbout == ""{
+		obj.Output(httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	// todo: docker service update --image
+
+	// 记录信息
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+	hsetKey := REDIS_KEY_APP_INFO_HSET + appId
+	if redisClient.HSet(hsetKey, "nowImageName", imageName).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.HSet(hsetKey, "nowImageCreateTime", imageTime).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	if redisClient.HSet(hsetKey, "nowImageAbout", imageAbout).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	// 记录日志
+	log := jsonTools.InterfaceToJson(map[string]interface{}{
+		"type": "info",
+		"content": "应用采用新镜像：" + imageAbout,
+		"time": timeTools.GetNowTime("%Y-%m-%d %H:%M:%S"),
+	})
+	redisClient.LPush(REDIS_KEY_APP_LOG_LIST+appId, log)
+
+	obj.Output(httpCode.OkCode, "使用新镜像成功！")
 }

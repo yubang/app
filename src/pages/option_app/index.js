@@ -66,7 +66,46 @@ app.init({
         selectImage: function(i){
             // 修改提示
             this.imageMessage = "镜像打包于：" + this.options[i]["time"];
+        },
+        useImage: function(){
+            var index = this.image;
+            if(index == ""){
+                this.$message({
+                    message: "请选择一个镜像！",
+                    type: 'warning'
+                });
+                return;
+            }
+            var data = this.options[index];
+            var that = this;
+
+            $.post("/admin/api/useImage", {
+                "appId": app.get_args("appId"),
+                imageName:data["image"],
+                imageTime:data["time"],
+                imageAbout: data["label"]
+            }, function(data){
+                if(data["code"]==0){
+                    that.$message({
+                        message: data["data"],
+                        type: 'success'
+                    });
+                    app.reload();
+                }else{
+                    that.$message({
+                        message: data['msg'],
+                        type: 'error'
+                    });
+                }
+            }).error(function(){
+                that.$message({
+                    message: "服务器未知错误！",
+                    type: 'error'
+                });
+            });
+
         }
+
     }
 })
 

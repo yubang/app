@@ -72,7 +72,7 @@
                                     :value="item.value">
                             </el-option>
                         </el-select>
-                        <el-button type="info">应用镜像</el-button>
+                        <el-button type="info" @click="useImage">应用镜像</el-button>
                         <br>
                         <template v-if="imageMessage != ''">{{imageMessage}}</template>
                     </el-form-item>
