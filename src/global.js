@@ -2,6 +2,10 @@ function gotoApps(){
     app.goto('/admin/web/apps');
 }
 
+function gotoContainerServer() {
+    app.goto('/admin/web/server');
+}
+
 function exitAccount() {
     $.get("/admin/api/exit", {}, function(data){
         app.goto("/admin/web/login");

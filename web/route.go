@@ -23,6 +23,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/getAddMessage": getAddMessage,
 	"/admin/api/exit": exitAccount,
 	"/admin/api/login": login,
+	"/admin/api/getContainerServer": getContainerServer,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -525,4 +526,11 @@ func login(obj *webTools.HttpObject){
 	obj.Session["admin"] = timeTools.GetNowTime("%Y-%m-%d %H:%M:%S")
 
 	obj.Output(httpCode.OkCode, "登录成功！")
+}
+
+func getContainerServer(obj *webTools.HttpObject){
+	d := []map[string]string{
+		map[string]string{"addr": "192.168.1.100", "name": "VM_46_213_centos", "status": "Active"},
+	}
+	obj.Output(httpCode.OkCode, d)
 }

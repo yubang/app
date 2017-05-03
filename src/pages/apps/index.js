@@ -6,7 +6,8 @@ app.init({
             return {
                 apps: data["data"].apps,
                 currentPage: parseInt(app.get_args("page") || 1),
-                totalPage: data["data"].nums
+                totalPage: data["data"].nums,
+                tabIndex: "1"
             }
         },
         before_success: beforeHandleAjx,

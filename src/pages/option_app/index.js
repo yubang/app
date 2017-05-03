@@ -19,7 +19,8 @@ app.init({
               app: obj["appInfo"],
               appId: obj["appId"],
               logs: obj["logs"],
-              imageMessage: ""
+              imageMessage: "",
+              tabIndex: "1"
           }
       },
         before_success: beforeHandleAjx,

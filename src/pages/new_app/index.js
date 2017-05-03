@@ -9,7 +9,8 @@ app.init({
                   cpu: "1核",
                   nums: 1
               },
-              options: data['data']
+              options: data['data'],
+              tabIndex: "1"
           };
       },
         before_success: beforeHandleAjx,

@@ -1,0 +1,24 @@
+<extends src="../base.html" />
+<block name="content">
+    <template>
+        <el-table
+                :data="tableData"
+                border
+                style="width: 100%">
+            <el-table-column
+                    prop="name"
+                    label="服务器名称"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="addr"
+                    label="服务器地址"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="status"
+                    label="状态">
+            </el-table-column>
+        </el-table>
+    </template>
+</block>
