@@ -55,7 +55,7 @@ func GetRedisClientObject(info map[string]interface{})RedisClientObject{
 		db = info["db"].(int)
 	}
 	if info["password"] != nil{
-		host = info["password"].(string)
+		password = info["password"].(string)
 	}
 	return RedisClientObject{host, port, db, password, nil,}
 }

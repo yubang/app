@@ -7,9 +7,7 @@
   },
   "Http":{
     "Ip": "0.0.0.0",
-    "Port": 8000,
-    "User": "root",
-    "Password": "root"
+    "Port": 8000
   },
   "Image":{
     "static": "paas_base_static_v1",

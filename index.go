@@ -21,7 +21,12 @@ func main(){
 		obj["Admin"].(map[string]interface{})["Password"].(string),
 	}
 
-	redisObject := cacheTools.GetRedisClientObject(map[string]interface{}{})
+	redisObject := cacheTools.GetRedisClientObject(map[string]interface{}{
+		"host": obj["Redis"].(map[string]interface{})["Host"].(string),
+		"port": int(obj["Redis"].(map[string]interface{})["Port"].(float64)),
+		"db": int(obj["Redis"].(map[string]interface{})["Db"].(float64)),
+		"password": obj["Redis"].(map[string]interface{})["Password"].(string),
+	})
 	config := web.OwnConfigInfo{
 		":8000",
 		redisObject,
