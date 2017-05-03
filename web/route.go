@@ -10,6 +10,7 @@ import (
 	"../ctsFrame/jsonTools"
 	"../ctsFrame/utilTools"
 	"math/rand"
+	"./docker"
 )
 
 var routes = map[string]webTools.HttpHandler{
@@ -529,8 +530,6 @@ func login(obj *webTools.HttpObject){
 }
 
 func getContainerServer(obj *webTools.HttpObject){
-	d := []map[string]string{
-		map[string]string{"addr": "192.168.1.100", "name": "VM_46_213_centos", "status": "Active"},
-	}
+	d := docker.GetNodeList()
 	obj.Output(httpCode.OkCode, d)
 }

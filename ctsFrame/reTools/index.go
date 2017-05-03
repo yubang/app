@@ -30,3 +30,14 @@ func Match(regStr string, sourceStr string)bool{
 	reg := regexp.MustCompile(regStr)
 	return reg.Match([]byte(sourceStr))
 }
+
+/*
+字符串匹配
+@param regStr: 正则表达式字符串
+@param sep: 分隔符
+@return []string
+ */
+func Split(regStr string, sep string)[]string{
+	reg := regexp.MustCompile(regStr)
+	return reg.Split(sep, -1)
+}
