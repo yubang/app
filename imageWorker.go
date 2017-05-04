@@ -51,6 +51,7 @@ func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientO
 	if err != nil{
 		return false
 	}
+	defer fileTools.RemoveDir(dirPath)
 
 	// clone代码
 	if shellTools.RunCommand("git clone --depth=1 " + gitUrl + " " + dirPath + "/web") == nil{
