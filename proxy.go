@@ -47,5 +47,5 @@ func getHandler()func(http.ResponseWriter, *http.Request){
 
 func main(){
 	http.HandleFunc("/", getHandler())
-	http.ListenAndServe("0.0.0.0:80", nil)
+	http.ListenAndServe("0.0.0.0:10000", nil)
 }

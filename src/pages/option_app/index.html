@@ -26,7 +26,7 @@
         <div class="text item">
             <el-form ref="form" :model="container" label-width="80px">
                 <el-form-item label="容器数量">
-                    <el-input-number v-model="container.nums" :min="1" :max="10"></el-input-number>
+                    <el-input-number v-model="container.nums" :min="0" :max="10"></el-input-number>
                 </el-form-item>
                 <el-form-item label="容器CPU">
                     <el-radio-group v-model="container.cpu">

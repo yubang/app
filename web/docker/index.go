@@ -15,7 +15,7 @@ import (
 
 // 创建服务
 func CreateService(appId string, nums int, port int, imageName string)bool{
-	s := "docker service create --replicas " + typeConversionTools.IntToString(nums) + " --name "+appId+"  -p "+typeConversionTools.IntToString(port)+":80  "+imageName+" /var/start.sh"
+	s := "docker service create --replicas " + typeConversionTools.IntToString(nums) + " --name "+appId+"  -p "+typeConversionTools.IntToString(port)+":80  "+imageName+" /bin/bash /var/start.sh"
 	return shellTools.RunCommand(s) != nil
 }
 
@@ -33,11 +33,7 @@ func UpdateImage(appId string, imageName string)bool{
 
 // 修改容器信息
 func UpdateContainer(appId string, nums int, cpu int, memory int)bool{
-	s := "docker service update  --reserve-memory "+ typeConversionTools.IntToString(memory) +"M --limit-cpu " + typeConversionTools.IntToString(cpu) + " " + appId
-	if shellTools.RunCommand(s) == nil{
-		return false
-	}
-	s = "docker service scale " + appId + "=" + typeConversionTools.IntToString(nums)
+	s := "docker service update --replicas " + typeConversionTools.IntToString(nums) + " --reserve-memory "+ typeConversionTools.IntToString(memory) +"M --limit-cpu " + typeConversionTools.IntToString(cpu) + " " + appId
 	if shellTools.RunCommand(s) == nil{
 		return false
 	}
