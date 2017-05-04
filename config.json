@@ -17,7 +17,8 @@
     "golang": "paas_base_golang_v1",
     "java8": "paas_base_java8_v1",
     "python2-work": "paas_base_python27_work_v1",
-    "nodejs": "paas_base_nodejs_v1"
+    "nodejs": "paas_base_nodejs_v1",
+    "ruby": "paas_base_ruby_v1"
   },
   "Admin":{
     "Username": "root",
