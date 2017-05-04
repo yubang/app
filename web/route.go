@@ -438,10 +438,18 @@ func buildImage(obj *webTools.HttpObject){
 
 	// 压入任务队列
 	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
-	redisClient.RPush(REDIS_KEY_BUILD_IMAGE_TASK_LIST, jsonTools.InterfaceToJson(map[string]interface{}{
+	if redisClient.RPush(REDIS_KEY_BUILD_IMAGE_TASK_LIST, jsonTools.InterfaceToJson(map[string]interface{}{
 		"appId": appId,
 		"imageAbout": imageAbout,
-	}))
+	})).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+
+	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "nowImageStatus", 2).Err() != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
 
 	// 记录日志
 	log := jsonTools.InterfaceToJson(map[string]interface{}{
