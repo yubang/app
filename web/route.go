@@ -192,6 +192,12 @@ func createApp(r *webTools.HttpObject){
 		return
 	}
 
+	// 启动docker 创建服务
+	n, _ := typeConversionTools.StringToInt(nums)
+	if !docker.CreateService(appId, n, port, testImageName){
+		r.Output(httpCode.ServerErrorCode, "创建服务出错！")
+		return
+	}
 
 	// 写入zset，只写入appid
 	if redisClient.ZAdd(REDIS_KEY_APP_ZSET, redis.Z{float64(power), appId}).Err() != nil{
@@ -268,6 +274,12 @@ func deleteApp(obj *webTools.HttpObject){
 
 	if appId == ""{
 		obj.Output(httpCode.ParameterMissingCode, -1)
+		return
+	}
+
+	// 删除docker服务
+	if !docker.DeleteService(appId){
+		obj.Output(httpCode.ParameterMissingCode, "调用docker命令出错！")
 		return
 	}
 
@@ -398,7 +410,14 @@ func updateAppContainerInfo(obj *webTools.HttpObject){
 		return
 	}
 
-	// todo: 调用docker service update
+	//调用docker service update
+	n, _ := typeConversionTools.StringToInt(nums)
+	c, _ := typeConversionTools.StringToInt(cpu)
+	m, _ := typeConversionTools.StringToInt(memory)
+	if !docker.UpdateContainer(appId, n, c, m){
+		obj.Output(httpCode.ServerErrorCode, "调用docker命令出错！")
+		return
+	}
 
 	// 记录日志
 	log := jsonTools.InterfaceToJson(map[string]interface{}{
@@ -415,28 +434,14 @@ func updateAppContainerInfo(obj *webTools.HttpObject){
 func buildImage(obj *webTools.HttpObject){
 
 	appId := obj.Request.FormValue("appId")
-
-	// todo: 拉取代码，生成docker image
-	imageName := utilTools.GetToken32()
-	imageCreateTime := timeTools.GetNowTime("%Y-%m-%d %H:%M:%S")
 	imageAbout := obj.Request.FormValue("imageAbout")
-	image := jsonTools.InterfaceToJson(map[string]interface{}{
-		"imageName": imageName,
-		"imageCreateTime": imageCreateTime,
-		"imageAbout": imageAbout,
-	})
 
-	// 更新信息
+	// 压入任务队列
 	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
-	if redisClient.LPush(REDIS_KEY_APP_IMAGE_LIST+appId, image).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
-		return
-	}
-
-	if redisClient.HSet(REDIS_KEY_APP_INFO_HSET+appId, "nowImageStatus", 2).Err() != nil{
-		obj.Output(httpCode.ServerErrorCode, nil)
-		return
-	}
+	redisClient.RPush(REDIS_KEY_BUILD_IMAGE_TASK_LIST, jsonTools.InterfaceToJson(map[string]interface{}{
+		"appId": appId,
+		"imageAbout": imageAbout,
+	}))
 
 	// 记录日志
 	log := jsonTools.InterfaceToJson(map[string]interface{}{
@@ -464,7 +469,11 @@ func useImage(obj *webTools.HttpObject){
 		return
 	}
 
-	// todo: docker service update --image
+	//docker service update --image
+	if !docker.UpdateImage(appId, imageName){
+		obj.Output(httpCode.ServerErrorCode, "执行更新镜像操作失败！")
+		return
+	}
 
 	// 记录信息
 	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
@@ -493,6 +502,7 @@ func useImage(obj *webTools.HttpObject){
 	obj.Output(httpCode.OkCode, "使用新镜像成功！")
 }
 
+// 添加页面
 func getAddMessage(obj *webTools.HttpObject){
 	d := make([]map[string]string, len(obj.OwnObj.(*OwnConfigInfo).ImageMap))
 	index := 0
@@ -529,6 +539,7 @@ func login(obj *webTools.HttpObject){
 	obj.Output(httpCode.OkCode, "登录成功！")
 }
 
+// 获取集群服务器信息
 func getContainerServer(obj *webTools.HttpObject){
 	d := docker.GetNodeList()
 	obj.Output(httpCode.OkCode, d)

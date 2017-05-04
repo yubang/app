@@ -6,17 +6,37 @@
                 border
                 style="width: 100%">
             <el-table-column
-                    prop="name"
-                    label="服务器名称"
+                    prop="ID"
+                    label="ID"
                     width="180">
             </el-table-column>
             <el-table-column
-                    prop="addr"
-                    label="服务器地址"
+                    prop="Description.Hostname"
+                    label="主机名"
                     width="180">
             </el-table-column>
             <el-table-column
-                    prop="status"
+                    label="CPU">
+                <template scope="scope">
+                    {{parseInt(scope.row.Description.Resources.NanoCPUs / 1024/ 1024)}}
+                </template>
+            </el-table-column>
+            <el-table-column
+                    label="内存">
+                <template scope="scope">
+                    {{parseInt(scope.row.Description.Resources.MemoryBytes / 1024/ 1024) + 'M'}}
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="Description.Engine.EngineVersion"
+                    label="docker版本">
+            </el-table-column>
+            <el-table-column
+                    prop="Spec.Role"
+                    label="类型">
+            </el-table-column>
+            <el-table-column
+                    prop="Spec.Availability"
                     label="状态">
             </el-table-column>
         </el-table>

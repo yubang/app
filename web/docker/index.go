@@ -9,46 +9,65 @@ package docker
 import (
 	"../../ctsFrame/typeConversionTools"
 	"../../ctsFrame/shellTools"
-	"fmt"
+	"../../ctsFrame/jsonTools"
 	"strings"
 )
 
-
+// 创建服务
 func CreateService(appId string, nums int, port int, imageName string)bool{
 	s := "docker service create --replicas " + typeConversionTools.IntToString(nums) + " --name "+appId+"  -p "+typeConversionTools.IntToString(port)+":80  "+imageName+" /var/start.sh"
-	fmt.Print(s + "\n")
-	return true
+	return shellTools.RunCommand(s) != nil
 }
 
+// 删除服务
+func DeleteService(appId string)bool{
+	s := "docker service rm " + appId
+	return shellTools.RunCommand(s) != nil
+}
+
+// 更新服务镜像
 func UpdateImage(appId string, imageName string)bool{
 	s := "docker service update --image "+ imageName +" " + appId
-	fmt.Print(s + "\n")
-	return true
+	return shellTools.RunCommand(s) != nil
 }
 
+// 修改容器信息
 func UpdateContainer(appId string, nums int, cpu int, memory int)bool{
 	s := "docker service update  --reserve-memory "+ typeConversionTools.IntToString(memory) +"M --limit-cpu " + typeConversionTools.IntToString(cpu) + " " + appId
+	if shellTools.RunCommand(s) == nil{
+		return false
+	}
 	s = "docker service scale " + appId + "=" + typeConversionTools.IntToString(nums)
-	fmt.Print(s + "\n")
+	if shellTools.RunCommand(s) == nil{
+		return false
+	}
 	return true
 }
 
-func GetNodeList()[]map[string]string{
+// 获取节点信息
+func GetNodeInfo(nodeId string)map[string]interface{}{
+	t := shellTools.RunCommand("docker node inspect " + nodeId)
+	objs := jsonTools.JsonToInterfaceList(t)
+	if len(objs) == 1{
+		return objs[0].(map[string]interface{})
+	}
+	return nil
+}
+
+// 获取节点列表
+func GetNodeList()[]map[string]interface{}{
 	t:= shellTools.RunCommand("docker node ls|awk 'NR!=1{print}'")
 	if t == nil{
-		return []map[string]string{}
+		return []map[string]interface{}{}
 	}
 	lines := strings.Split(string(t), "\n")
-	result := make([]map[string]string, len(lines))
+	result := make([]map[string]interface{}, len(lines))
 	for index, line := range lines{
 		arrs := strings.Split(line, " ")
 		if len(arrs) <5{
 			continue
 		}
-		result[index] = make(map[string]string)
-		result[index]["name"] = arrs[3]
-		result[index]["status"] = arrs[8]
-		result[index]["addr"] = "未知"
+		result[index] = GetNodeInfo(arrs[0])
 	}
 
 	length := 0
@@ -58,7 +77,7 @@ func GetNodeList()[]map[string]string{
 		}
 	}
 
-	d := make([]map[string]string, length)
+	d := make([]map[string]interface{}, length)
 	index := 0
 	for _, obj := range result{
 		if obj != nil {
