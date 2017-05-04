@@ -17,15 +17,9 @@ import (
 	"./web"
 )
 
-func getHandler()func(http.ResponseWriter, *http.Request){
+func getHandler(cache cacheTools.RedisClientObject)func(http.ResponseWriter, *http.Request){
 
-	obj := jsonTools.JsonToInterface(fileTools.ReadFromFile("./config.json"))
-	cache := cacheTools.GetRedisClientObject(map[string]interface{}{
-		"host": obj["Redis"].(map[string]interface{})["Host"].(string),
-		"port": int(obj["Redis"].(map[string]interface{})["Port"].(float64)),
-		"db": int(obj["Redis"].(map[string]interface{})["Db"].(float64)),
-		"password": obj["Redis"].(map[string]interface{})["Password"].(string),
-	})
+
 	return func(w http.ResponseWriter, r *http.Request){
 		host := stringTools.GetSplitFirstArr(r.Host, ":")
 		client := cache.GetRedisClient()
@@ -46,6 +40,15 @@ func getHandler()func(http.ResponseWriter, *http.Request){
 }
 
 func main(){
-	http.HandleFunc("/", getHandler())
-	http.ListenAndServe("0.0.0.0:10000", nil)
+
+	obj := jsonTools.JsonToInterface(fileTools.ReadFromFile("./config.json"))
+	cache := cacheTools.GetRedisClientObject(map[string]interface{}{
+		"host": obj["Redis"].(map[string]interface{})["Host"].(string),
+		"port": int(obj["Redis"].(map[string]interface{})["Port"].(float64)),
+		"db": int(obj["Redis"].(map[string]interface{})["Db"].(float64)),
+		"password": obj["Redis"].(map[string]interface{})["Password"].(string),
+	})
+
+	http.HandleFunc("/", getHandler(cache))
+	http.ListenAndServe(obj["ProxyAddr"].(string), nil)
 }

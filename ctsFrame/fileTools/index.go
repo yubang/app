@@ -3,6 +3,8 @@ package fileTools
 import (
 	"os"
 	"io/ioutil"
+	"../utilTools"
+	"errors"
 )
 
 /*
@@ -50,4 +52,26 @@ func CheckFileExist(filePath string) bool{
 		return false
 	}
 	return true
+}
+
+
+func MakeDirs(dirPath string)bool{
+	return os.MkdirAll(dirPath, 0777) == nil
+}
+
+func MakeTempDir()(string, error){
+	// todo: 现在仅支持linux
+	dirPath := "/tmp/ctsFrame/tmp/" + utilTools.GetToken32()
+	if !MakeDirs(dirPath){
+		return "", errors.New("无法创建临时文件夹")
+	}
+	return dirPath, nil
+}
+
+func WriteNewFile(filePath string, fileContent []byte)bool{
+	return ioutil.WriteFile(filePath, fileContent, 0777) == nil
+}
+
+func RemoveDir(dirPath string)bool{
+	return os.RemoveAll(dirPath) == nil
 }

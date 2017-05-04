@@ -11,14 +11,62 @@ import "./ctsFrame/jsonTools"
 import "./ctsFrame/cacheTools"
 import "./ctsFrame/fileTools"
 import "./ctsFrame/utilTools"
+import "./ctsFrame/shellTools"
 import (
 	"./web"
 	"time"
 )
 
-func buildImage()bool{
+func buildDockerfile(dirPath, baseImage string)bool{
+	t := "FROM "+baseImage+"\n"
+	t += "MAINTAINER paas（yubang93@gmail.com）\n"
+	t += "ADD web /var/web\n"
+	t += "RUN /bin/bash /var/install.sh\n"
+	return fileTools.WriteNewFile(dirPath+"/Dockerfile", []byte(t))
+}
 
-	// todo: 拉取代码，生成docker image
+func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientObject, imageMap map[string]interface{})bool{
+
+	redisClient := cacheObj.GetRedisClient()
+
+	// 获取必须信息
+	image, err2 := redisClient.HGet(web.REDIS_KEY_APP_INFO_HSET+appId, "image").Result()
+	if err2 != nil{
+		return false
+	}
+
+	gitUrl, err2 := redisClient.HGet(web.REDIS_KEY_APP_INFO_HSET+appId, "git").Result()
+	if err2 != nil || gitUrl == ""{
+		return false
+	}
+
+	// 获取基础镜像name
+	baseImage := imageMap[image]
+	if baseImage == nil{
+		return false
+	}
+
+	// 创建临时文件夹和Dockerfile文件
+	dirPath, err := fileTools.MakeTempDir()
+	if err != nil{
+		return false
+	}
+
+	// clone代码
+	if shellTools.RunCommand("git clone --depth=1 " + gitUrl + " " + dirPath + "/web") == nil{
+		return false
+	}
+
+	// 生成Docker文件
+	if !buildDockerfile(dirPath, baseImage.(string)){
+		return false
+	}
+
+	// 生成docker镜像
+	if shellTools.RunCommand("docker build -t  " + imageName + " " + dirPath) == nil{
+		return false
+	}
+
 	return true
 }
 
@@ -51,7 +99,7 @@ func signErrorImage(appId string, cacheObj cacheTools.RedisClientObject)bool{
 	return true
 }
 
-func handleTask(cacheObj cacheTools.RedisClientObject)bool{
+func handleTask(cacheObj cacheTools.RedisClientObject, imageMap map[string]interface{})bool{
 	redisClient := cacheObj.GetRedisClient()
 	arrs, err := redisClient.BLPop(0, web.REDIS_KEY_BUILD_IMAGE_TASK_LIST).Result()
 	if err != nil{
@@ -68,7 +116,7 @@ func handleTask(cacheObj cacheTools.RedisClientObject)bool{
 	appId := obj["appId"].(string)
 	var sign bool
 	var log []byte
-	if buildImage(){
+	if buildImage(appId, imageName, cacheObj, imageMap){
 		sign = updateMessage(appId, imageName, imageAbout, cacheObj)
 		log = jsonTools.InterfaceToJson(map[string]interface{}{
 			"type": "success",
@@ -96,8 +144,9 @@ func main(){
 		"db": int(obj["Redis"].(map[string]interface{})["Db"].(float64)),
 		"password": obj["Redis"].(map[string]interface{})["Password"].(string),
 	})
+
 	for ;true;{
-		if !handleTask(cache) {
+		if !handleTask(cache, obj["Image"].(map[string]interface{})) {
 			// 出错时候休眠3秒
 			time.Sleep(time.Second * 3)
 		}

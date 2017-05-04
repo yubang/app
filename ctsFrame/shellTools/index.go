@@ -13,6 +13,7 @@ shell模块封装
 
 func RunCommand(command string)[]byte{
 	f, err := exec.Command("bash", "-c", command).Output()
+	fmt.Print(command + "\n")
 	if err != nil{
 		fmt.Print(err)
 		return nil
