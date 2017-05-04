@@ -25,7 +25,7 @@ func buildDockerfile(dirPath, baseImage string)bool{
 	return fileTools.WriteNewFile(dirPath+"/Dockerfile", []byte(t))
 }
 
-func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientObject, imageMap map[string]interface{})bool{
+func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientObject, imageMap map[string]interface{}, imageUrl string)bool{
 
 	redisClient := cacheObj.GetRedisClient()
 
@@ -68,15 +68,22 @@ func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientO
 		return false
 	}
 
+	// 提交镜像到仓库
+	if shellTools.RunCommand("docker tag "+imageName+" "+imageUrl+"/"+imageName) == nil{
+		return false
+	}
+	if shellTools.RunCommand("docker push "+imageUrl+"/"+imageName) == nil{
+		return false
+	}
 	return true
 }
 
-func updateMessage(appId string, imageName string, imageAbout string, cacheObj cacheTools.RedisClientObject)bool{
+func updateMessage(appId string, imageName string, imageAbout string, cacheObj cacheTools.RedisClientObject, imageUrl string)bool{
 	redisClient := cacheObj.GetRedisClient()
 
 	imageCreateTime := timeTools.GetNowTime("%Y-%m-%d %H:%M:%S")
 	image := jsonTools.InterfaceToJson(map[string]interface{}{
-		"imageName": imageName,
+		"imageName": imageUrl + "/" +imageName,
 		"imageCreateTime": imageCreateTime,
 		"imageAbout": imageAbout,
 	})
@@ -100,7 +107,7 @@ func signErrorImage(appId string, cacheObj cacheTools.RedisClientObject)bool{
 	return true
 }
 
-func handleTask(cacheObj cacheTools.RedisClientObject, imageMap map[string]interface{})bool{
+func handleTask(cacheObj cacheTools.RedisClientObject, imageMap map[string]interface{}, imageUrl string)bool{
 	redisClient := cacheObj.GetRedisClient()
 	arrs, err := redisClient.BLPop(0, web.REDIS_KEY_BUILD_IMAGE_TASK_LIST).Result()
 	if err != nil{
@@ -117,8 +124,8 @@ func handleTask(cacheObj cacheTools.RedisClientObject, imageMap map[string]inter
 	appId := obj["appId"].(string)
 	var sign bool
 	var log []byte
-	if buildImage(appId, imageName, cacheObj, imageMap){
-		sign = updateMessage(appId, imageName, imageAbout, cacheObj)
+	if buildImage(appId, imageName, cacheObj, imageMap, imageUrl){
+		sign = updateMessage(appId, imageName, imageAbout, cacheObj, imageUrl)
 		log = jsonTools.InterfaceToJson(map[string]interface{}{
 			"type": "success",
 			"content": "构建镜像成功！",
@@ -147,7 +154,7 @@ func main(){
 	})
 
 	for ;true;{
-		if !handleTask(cache, obj["Image"].(map[string]interface{})) {
+		if !handleTask(cache, obj["Image"].(map[string]interface{}), obj["ImageUrl"].(string)) {
 			// 出错时候休眠3秒
 			time.Sleep(time.Second * 3)
 		}
