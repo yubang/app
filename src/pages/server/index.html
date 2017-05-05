@@ -1,5 +1,7 @@
 <extends src="../base.html" />
 <block name="content">
+    <el-button type="info" @click="findJoin">查看获取加入集群命令</el-button>
+    <br><br>
     <template>
         <el-table
                 :data="tableData"
@@ -38,6 +40,13 @@
             <el-table-column
                     prop="Spec.Availability"
                     label="状态">
+            </el-table-column>
+            <el-table-column
+                    label="操作">
+                <template scope="scope">
+                    <el-button v-if="scope.row.Spec.Role != 'manager'" type="danger" @click="deleteNode(scope.$index)">移除</el-button>
+                    <el-button v-else type="danger" disabled="true">移除</el-button>
+                </template>
             </el-table-column>
         </el-table>
     </template>

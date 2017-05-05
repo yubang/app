@@ -18,7 +18,9 @@
                 <template v-else>无</template>
             </p>
             <p><strong>代码地址：</strong> {{app.git}}</p>
-            <p><strong>应用域名：</strong> {{app.domain}}</p>
+            <p><strong>应用域名：</strong>
+                <a :href="'http://'+app.domain" target="_blank">http://{{app.domain}}</a>
+            </p>
             <p><strong>CPU：</strong> {{app.cpu}}核</p>
             <p><strong>内存：</strong> {{app.memory}}M</p>
             <p>

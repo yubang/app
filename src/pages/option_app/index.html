@@ -13,7 +13,9 @@
             <p><strong>应用镜像：</strong> <template v-if="app.nowImageName != ''">{{app.nowImageName}}</template>
                 <template v-else>无</template></p>
             <p><strong>代码地址：</strong> {{app.git}}</p>
-            <p><strong>应用域名：</strong> {{app.domain}}</p>
+            <p><strong>应用域名：</strong>
+                <a :href="'http://'+app.domain" target="_blank">http://{{app.domain}}</a>
+            </p>
         </div>
     </el-card>
     <br>

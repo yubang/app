@@ -84,3 +84,17 @@ func GetNodeList()[]map[string]interface{}{
 
 	return d
 }
+
+// 获取加入集群命令
+func GetJoinCommand()string{
+	d := shellTools.RunCommand("docker swarm join-token manager")
+	if d == nil{
+		return ""
+	}
+	return string(d)
+}
+
+// 移除节点服务器
+func DeleteNode(nodeId string)bool{
+	return shellTools.RunCommand("docker service rm " + nodeId) != nil
+}

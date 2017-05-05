@@ -25,6 +25,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/exit": exitAccount,
 	"/admin/api/login": login,
 	"/admin/api/getContainerServer": getContainerServer,
+	"/admin/api/deleteNode": deleteNode,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -550,5 +551,23 @@ func login(obj *webTools.HttpObject){
 // 获取集群服务器信息
 func getContainerServer(obj *webTools.HttpObject){
 	d := docker.GetNodeList()
-	obj.Output(httpCode.OkCode, d)
+	command := docker.GetJoinCommand()
+	obj.Output(httpCode.OkCode, map[string]interface{}{
+		"nodes": d,
+		"command": command,
+	})
+}
+
+// 移除一个节点服务器
+func deleteNode(obj *webTools.HttpObject){
+	nodeId := obj.Request.FormValue("nodeName")
+	if nodeId == ""{
+		obj.Output(httpCode.ParameterMissingCode, nil)
+		return
+	}
+	if !docker.DeleteNode(nodeId){
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	obj.Output(httpCode.OkCode, nil)
 }
