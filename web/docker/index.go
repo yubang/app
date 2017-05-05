@@ -33,7 +33,7 @@ func UpdateImage(appId string, imageName string)bool{
 
 // 修改容器信息
 func UpdateContainer(appId string, nums int, cpu int, memory int)bool{
-	s := "docker service update --replicas " + typeConversionTools.IntToString(nums) + " --reserve-memory "+ typeConversionTools.IntToString(memory) +"M --limit-cpu " + typeConversionTools.IntToString(cpu) + " " + appId
+	s := "docker service update --replicas " + typeConversionTools.IntToString(nums) + " --limit-memory "+ typeConversionTools.IntToString(memory) +"M --limit-cpu " + typeConversionTools.IntToString(cpu) + " " + appId
 	if shellTools.RunCommand(s) == nil{
 		return false
 	}
