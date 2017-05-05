@@ -15,7 +15,7 @@ import (
 
 // 创建服务
 func CreateService(appId string, nums int, port int, imageName string)bool{
-	s := "docker service create --replicas " + typeConversionTools.IntToString(nums) + " --name "+appId+"  -p "+typeConversionTools.IntToString(port)+":80  "+imageName+" /bin/bash /var/start.sh"
+	s := "docker service create --replicas " + typeConversionTools.IntToString(nums) + " --name "+appId+"  -p "+typeConversionTools.IntToString(port)+":80 --network " + appId + " " +imageName+" /bin/bash /var/start.sh"
 	return shellTools.RunCommand(s) != nil
 }
 
@@ -87,14 +87,27 @@ func GetNodeList()[]map[string]interface{}{
 
 // 获取加入集群命令
 func GetJoinCommand()string{
-	d := shellTools.RunCommand("docker swarm join-token manager")
+	d := shellTools.RunCommand("docker swarm join-token worker")
 	if d == nil{
 		return ""
 	}
-	return string(d)
+	s := strings.Replace(string(d), "\\", "", -1)
+	s = strings.Replace(s, "To add a worker to this swarm, run the following command:", "", -1)
+
+	return s
 }
 
 // 移除节点服务器
 func DeleteNode(nodeId string)bool{
-	return shellTools.RunCommand("docker service rm " + nodeId) != nil
+	return shellTools.RunCommand("docker node rm " + nodeId) != nil
+}
+
+// 创建网络
+func CreateNet(netName string)bool{
+	return shellTools.RunCommand("docker network create -d overlay " + netName) != nil
+}
+
+// 删除网络
+func DeleteNet(netName string)bool{
+	return shellTools.RunCommand("docker network rm " + netName) != nil
 }

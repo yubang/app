@@ -4,6 +4,7 @@ import "./web"
 import "./ctsFrame/cacheTools"
 import "./ctsFrame/fileTools"
 import "./ctsFrame/jsonTools"
+import "./ctsFrame/typeConversionTools"
 
 func main(){
 
@@ -28,7 +29,7 @@ func main(){
 		"password": obj["Redis"].(map[string]interface{})["Password"].(string),
 	})
 	config := web.OwnConfigInfo{
-		":8000",
+		obj["Http"].(map[string]interface{})["Ip"].(string) + ":" + typeConversionTools.Float64ToString(obj["Http"].(map[string]interface{})["Port"].(float64)),
 		redisObject,
 		image,
 		adminUser,

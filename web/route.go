@@ -193,6 +193,12 @@ func createApp(r *webTools.HttpObject){
 		return
 	}
 
+	// 创建网络
+	if !docker.CreateNet(appId){
+		r.Output(httpCode.ServerErrorCode, "创建网络出错！")
+		return
+	}
+
 	// 启动docker 创建服务
 	n, _ := typeConversionTools.StringToInt(nums)
 	if !docker.CreateService(appId, n, port, testImageName){
@@ -280,6 +286,12 @@ func deleteApp(obj *webTools.HttpObject){
 
 	// 删除docker服务
 	if !docker.DeleteService(appId){
+		obj.Output(httpCode.ParameterMissingCode, "调用docker命令出错！")
+		return
+	}
+
+	// 删除网络
+	if !docker.DeleteNet(appId){
 		obj.Output(httpCode.ParameterMissingCode, "调用docker命令出错！")
 		return
 	}
