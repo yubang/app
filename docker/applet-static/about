@@ -1,0 +1,4 @@
+生成镜像命令
+docker build -t paas_base_applet_static_v1 .
+启动命令
+docker run -d -p 9000:80 paas_base_applet_static_v1 /bin/bash /var/start.sh
