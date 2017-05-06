@@ -30,3 +30,4 @@ var REDIS_KEY_APP_IMAGE_LIST = "paas_app_image_list_"
 var REDIS_KEY_BUILD_IMAGE_TASK_LIST = "paas_build_image_task_list"
 
 var REDIS_KEY_SSH_STR = "paas_ssh_str"
+var REDIS_KEY_ERROR_SHELL_LIST = "paas_error_shell_list"

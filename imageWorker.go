@@ -11,9 +11,9 @@ import "./ctsFrame/jsonTools"
 import "./ctsFrame/cacheTools"
 import "./ctsFrame/fileTools"
 import "./ctsFrame/utilTools"
-import "./ctsFrame/shellTools"
 import (
 	"./web"
+	"./web/docker"
 	"time"
 )
 
@@ -53,8 +53,9 @@ func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientO
 	}
 	defer fileTools.RemoveDir(dirPath)
 
+	shellClient := docker.ShellStruct{cacheObj}
 	// clone代码
-	if shellTools.RunCommand("git clone --depth=1 " + gitUrl + " " + dirPath + "/web") == nil{
+	if shellClient.ExecShell("git clone --depth=1 " + gitUrl + " " + dirPath + "/web") == nil{
 		return false
 	}
 
@@ -64,15 +65,15 @@ func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientO
 	}
 
 	// 生成docker镜像
-	if shellTools.RunCommand("docker build -t  " + imageName + " " + dirPath) == nil{
+	if shellClient.ExecShell("docker build -t  " + imageName + " " + dirPath) == nil{
 		return false
 	}
 
 	// 提交镜像到仓库
-	if shellTools.RunCommand("docker tag "+imageName+" "+imageUrl+"/"+imageName) == nil{
+	if shellClient.ExecShell("docker tag "+imageName+" "+imageUrl+"/"+imageName) == nil{
 		return false
 	}
-	if shellTools.RunCommand("docker push "+imageUrl+"/"+imageName) == nil{
+	if shellClient.ExecShell("docker push "+imageUrl+"/"+imageName) == nil{
 		return false
 	}
 	return true
@@ -154,7 +155,8 @@ func main(){
 	})
 
 	// 读取ssh公钥
-	sshContent := shellTools.RunCommand("cat ~/.ssh/id_rsa.pub")
+	shellClient := docker.ShellStruct{cache}
+	sshContent := shellClient.ExecShell("cat ~/.ssh/id_rsa.pub")
 	cache.GetRedisClient().Set(web.REDIS_KEY_SSH_STR, sshContent, 0)
 
 	for ;true;{

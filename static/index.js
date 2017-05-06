@@ -145,6 +145,10 @@ function gotoSsh() {
     app.goto('/admin/web/ssh');
 }
 
+function gotoShell() {
+    app.goto('/admin/web/Shell');
+}
+
 function exitAccount() {
     $.get("/admin/api/exit", {}, function(data){
         app.goto("/admin/web/login");

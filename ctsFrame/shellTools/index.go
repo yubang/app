@@ -11,12 +11,12 @@ shell模块封装
 创建于2017年5月4日
  */
 
-func RunCommand(command string)[]byte{
+func RunCommand(command string)([]byte, error){
 	f, err := exec.Command("bash", "-c", command).Output()
 	fmt.Print(command + "\n")
 	if err != nil{
 		fmt.Print(err)
-		return nil
+		return nil, err
 	}
-	return f
+	return f, nil
 }

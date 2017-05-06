@@ -194,15 +194,17 @@ func createApp(r *webTools.HttpObject){
 		return
 	}
 
+	dockerClient := docker.DockerStruct{r.OwnObj.(*OwnConfigInfo).RedisObject}
+
 	// 创建网络
-	if !docker.CreateNet(appId){
+	if !dockerClient.CreateNet(appId){
 		r.Output(httpCode.ServerErrorCode, "创建网络出错！")
 		return
 	}
 
 	// 启动docker 创建服务
 	n, _ := typeConversionTools.StringToInt(nums)
-	if !docker.CreateService(appId, n, port, testImageName){
+	if !dockerClient.CreateService(appId, n, port, testImageName){
 		r.Output(httpCode.ServerErrorCode, "创建服务出错！")
 		return
 	}
@@ -286,13 +288,14 @@ func deleteApp(obj *webTools.HttpObject){
 	}
 
 	// 删除docker服务
-	if !docker.DeleteService(appId){
+	dockerClient := docker.DockerStruct{obj.OwnObj.(*OwnConfigInfo).RedisObject}
+	if !dockerClient.DeleteService(appId){
 		obj.Output(httpCode.ParameterMissingCode, "调用docker命令出错！")
 		return
 	}
 
 	// 删除网络
-	if !docker.DeleteNet(appId){
+	if !dockerClient.DeleteNet(appId){
 		obj.Output(httpCode.ParameterMissingCode, "调用docker命令出错！")
 		return
 	}
@@ -428,7 +431,8 @@ func updateAppContainerInfo(obj *webTools.HttpObject){
 	n, _ := typeConversionTools.StringToInt(nums)
 	c, _ := typeConversionTools.StringToInt(cpu)
 	m, _ := typeConversionTools.StringToInt(memory)
-	if !docker.UpdateContainer(appId, n, c, m){
+	dockerClient := docker.DockerStruct{obj.OwnObj.(*OwnConfigInfo).RedisObject}
+	if !dockerClient.UpdateContainer(appId, n, c, m){
 		obj.Output(httpCode.ServerErrorCode, "调用docker命令出错！")
 		return
 	}
@@ -492,7 +496,8 @@ func useImage(obj *webTools.HttpObject){
 	}
 
 	//docker service update --image
-	if !docker.UpdateImage(appId, imageName){
+	dockerClient := docker.DockerStruct{obj.OwnObj.(*OwnConfigInfo).RedisObject}
+	if !dockerClient.UpdateImage(appId, imageName){
 		obj.Output(httpCode.ServerErrorCode, "执行更新镜像操作失败！")
 		return
 	}
@@ -563,8 +568,9 @@ func login(obj *webTools.HttpObject){
 
 // 获取集群服务器信息
 func getContainerServer(obj *webTools.HttpObject){
-	d := docker.GetNodeList()
-	command := docker.GetJoinCommand()
+	dockerClient := docker.DockerStruct{obj.OwnObj.(*OwnConfigInfo).RedisObject}
+	d := dockerClient.GetNodeList()
+	command := dockerClient.GetJoinCommand()
 	obj.Output(httpCode.OkCode, map[string]interface{}{
 		"nodes": d,
 		"command": command,
@@ -578,7 +584,8 @@ func deleteNode(obj *webTools.HttpObject){
 		obj.Output(httpCode.ParameterMissingCode, nil)
 		return
 	}
-	if !docker.DeleteNode(nodeId){
+	dockerClient := docker.DockerStruct{obj.OwnObj.(*OwnConfigInfo).RedisObject}
+	if !dockerClient.DeleteNode(nodeId){
 		obj.Output(httpCode.ServerErrorCode, nil)
 		return
 	}

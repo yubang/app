@@ -11,38 +11,70 @@ import (
 	"../../ctsFrame/shellTools"
 	"../../ctsFrame/jsonTools"
 	"strings"
+	"../../ctsFrame/cacheTools"
+	"../../ctsFrame/timeTools"
 )
 
+
+type ShellStruct struct{
+	Client cacheTools.RedisClientObject
+}
+
+func (obj *ShellStruct)ExecShell(command string)[]byte{
+	d, err := shellTools.RunCommand(command)
+	if err != nil{
+		// 记录日志
+		log := jsonTools.InterfaceToJson(map[string]interface{}{
+			"time": timeTools.GetNowTime("%Y-%m-%d %H:%M:%S"),
+			"command": command,
+			"content": d,
+		})
+		obj.Client.GetRedisClient().LPush("paas_error_shell_list", log)
+		return nil
+	}
+	return d
+}
+
+
+type DockerStruct struct {
+	Client cacheTools.RedisClientObject
+}
+
+func (obj *DockerStruct)getClient()*ShellStruct{
+	shell := ShellStruct{obj.Client}
+	return &shell
+}
+
 // 创建服务
-func CreateService(appId string, nums int, port int, imageName string)bool{
+func (obj *DockerStruct)CreateService(appId string, nums int, port int, imageName string)bool{
 	s := "docker service create --replicas " + typeConversionTools.IntToString(nums) + " --name "+appId+"  -p "+typeConversionTools.IntToString(port)+":80 --network " + appId + " " +imageName+" /bin/bash /var/start.sh"
-	return shellTools.RunCommand(s) != nil
+	return obj.getClient().ExecShell(s) != nil
 }
 
 // 删除服务
-func DeleteService(appId string)bool{
+func (obj *DockerStruct)DeleteService(appId string)bool{
 	s := "docker service rm " + appId
-	return shellTools.RunCommand(s) != nil
+	return obj.getClient().ExecShell(s) != nil
 }
 
 // 更新服务镜像
-func UpdateImage(appId string, imageName string)bool{
+func (obj *DockerStruct)UpdateImage(appId string, imageName string)bool{
 	s := "docker service update --image "+ imageName +" " + appId
-	return shellTools.RunCommand(s) != nil
+	return obj.getClient().ExecShell(s) != nil
 }
 
 // 修改容器信息
-func UpdateContainer(appId string, nums int, cpu int, memory int)bool{
+func (obj *DockerStruct)UpdateContainer(appId string, nums int, cpu int, memory int)bool{
 	s := "docker service update --replicas " + typeConversionTools.IntToString(nums) + " --limit-memory "+ typeConversionTools.IntToString(memory) +"M --limit-cpu " + typeConversionTools.IntToString(cpu) + " " + appId
-	if shellTools.RunCommand(s) == nil{
+	if obj.getClient().ExecShell(s) == nil{
 		return false
 	}
 	return true
 }
 
 // 获取节点信息
-func GetNodeInfo(nodeId string)map[string]interface{}{
-	t := shellTools.RunCommand("docker node inspect " + nodeId)
+func (obj *DockerStruct)GetNodeInfo(nodeId string)map[string]interface{}{
+	t := obj.getClient().ExecShell("docker node inspect " + nodeId)
 	objs := jsonTools.JsonToInterfaceList(t)
 	if len(objs) == 1{
 		return objs[0].(map[string]interface{})
@@ -51,8 +83,8 @@ func GetNodeInfo(nodeId string)map[string]interface{}{
 }
 
 // 获取节点列表
-func GetNodeList()[]map[string]interface{}{
-	t:= shellTools.RunCommand("docker node ls|awk 'NR!=1{print}'")
+func (obj *DockerStruct)GetNodeList()[]map[string]interface{}{
+	t:= obj.getClient().ExecShell("docker node ls|awk 'NR!=1{print}'")
 	if t == nil{
 		return []map[string]interface{}{}
 	}
@@ -63,7 +95,7 @@ func GetNodeList()[]map[string]interface{}{
 		if len(arrs) <5{
 			continue
 		}
-		result[index] = GetNodeInfo(arrs[0])
+		result[index] = obj.GetNodeInfo(arrs[0])
 	}
 
 	length := 0
@@ -86,8 +118,8 @@ func GetNodeList()[]map[string]interface{}{
 }
 
 // 获取加入集群命令
-func GetJoinCommand()string{
-	d := shellTools.RunCommand("docker swarm join-token worker")
+func (obj *DockerStruct)GetJoinCommand()string{
+	d := obj.getClient().ExecShell("docker swarm join-token worker")
 	if d == nil{
 		return ""
 	}
@@ -98,16 +130,16 @@ func GetJoinCommand()string{
 }
 
 // 移除节点服务器
-func DeleteNode(nodeId string)bool{
-	return shellTools.RunCommand("docker node rm " + nodeId) != nil
+func (obj *DockerStruct)DeleteNode(nodeId string)bool{
+	return obj.getClient().ExecShell("docker node rm " + nodeId) != nil
 }
 
 // 创建网络
-func CreateNet(netName string)bool{
-	return shellTools.RunCommand("docker network create -d overlay " + netName) != nil
+func (obj *DockerStruct)CreateNet(netName string)bool{
+	return obj.getClient().ExecShell("docker network create -d overlay " + netName) != nil
 }
 
 // 删除网络
-func DeleteNet(netName string)bool{
-	return shellTools.RunCommand("docker network rm " + netName) != nil
+func (obj *DockerStruct)DeleteNet(netName string)bool{
+	return obj.getClient().ExecShell("docker network rm " + netName) != nil
 }
