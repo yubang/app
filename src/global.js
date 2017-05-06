@@ -11,7 +11,7 @@ function gotoSsh() {
 }
 
 function gotoShell() {
-    app.goto('/admin/web/Shell');
+    app.goto('/admin/web/shell');
 }
 
 function exitAccount() {

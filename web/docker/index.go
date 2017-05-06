@@ -27,7 +27,7 @@ func (obj *ShellStruct)ExecShell(command string)[]byte{
 		log := jsonTools.InterfaceToJson(map[string]interface{}{
 			"time": timeTools.GetNowTime("%Y-%m-%d %H:%M:%S"),
 			"command": command,
-			"content": d,
+			"content": err.Error(),
 		})
 		obj.Client.GetRedisClient().LPush("paas_error_shell_list", log)
 		return nil

@@ -27,6 +27,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/getContainerServer": getContainerServer,
 	"/admin/api/deleteNode": deleteNode,
 	"/admin/api/getSsh": getSsh,
+	"/admin/api/getShellLog": getShellError,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -597,4 +598,42 @@ func getSsh(obj *webTools.HttpObject){
 	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
 	sshContent, _ := redisClient.Get(REDIS_KEY_SSH_STR).Result()
 	obj.Output(httpCode.OkCode, sshContent)
+}
+
+// 获取执行错误的shell日志
+func getShellError(obj *webTools.HttpObject){
+
+	page := obj.Request.FormValue("page")
+	if page == ""{
+		obj.Output(httpCode.ParameterMissingCode, nil)
+		return
+	}
+
+	p, errNum := typeConversionTools.StringToInt(page)
+	if errNum != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	offset := 5
+	index := (p - 1) * offset
+
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+	nums, err := redisClient.LLen(REDIS_KEY_ERROR_SHELL_LIST).Result()
+	if err != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	arrs, err2 := redisClient.LRange(REDIS_KEY_ERROR_SHELL_LIST, int64(index), int64(index+offset-1)).Result()
+	if err2 != nil{
+		obj.Output(httpCode.ServerErrorCode, nil)
+		return
+	}
+	datas := make([]map[string]interface{}, len(arrs))
+	for index, v := range arrs{
+		datas[index] = jsonTools.JsonToInterface([]byte(v))
+	}
+	obj.Output(httpCode.OkCode, map[string]interface{}{
+		"nums": nums,
+		"objs": datas,
+	})
 }

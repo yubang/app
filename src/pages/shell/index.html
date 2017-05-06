@@ -1,0 +1,15 @@
+<extends src="../base.html" />
+<block name="content">
+
+    <el-collapse accordion>
+        <el-collapse-item v-for="(obj, index) in objs" :title="'['+obj.time+'] ' + obj.command" :name="index">
+            <pre>{{obj.content}}</pre>
+        </el-collapse-item>
+    </el-collapse>
+    <br>
+    <el-pagination
+            layout="prev, pager, next"
+            :total="nums" page-size="5" :current-page="currentPage" @current-change="currentChange">
+    </el-pagination>
+
+</block>
