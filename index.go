@@ -29,6 +29,7 @@ func main(){
 		"password": obj["Redis"].(map[string]interface{})["Password"].(string),
 	})
 	config := web.OwnConfigInfo{
+		obj["TestImage"].(string),
 		obj["Http"].(map[string]interface{})["Ip"].(string) + ":" + typeConversionTools.Float64ToString(obj["Http"].(map[string]interface{})["Port"].(float64)),
 		redisObject,
 		image,

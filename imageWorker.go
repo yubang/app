@@ -153,6 +153,10 @@ func main(){
 		"password": obj["Redis"].(map[string]interface{})["Password"].(string),
 	})
 
+	// 读取ssh公钥
+	sshContent := shellTools.RunCommand("cat ~/.ssh/id_rsa.pub")
+	cache.GetRedisClient().Set(web.REDIS_KEY_SSH_STR, sshContent, 0)
+
 	for ;true;{
 		if !handleTask(cache, obj["Image"].(map[string]interface{}), obj["ImageUrl"].(string)) {
 			// 出错时候休眠3秒

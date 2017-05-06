@@ -20,6 +20,19 @@ sudo service docker restart
 # 启动docker
 systemctl start docker.service
 
+# 下载基础镜像
+docker pull registry.alauda.cn/yubang/paas_base_test
+docker pull registry.alauda.cn/yubang/paas_base_applet_static
+docker pull registry.alauda.cn/yubang/paas_base_golang
+docker pull registry.alauda.cn/yubang/paas_base_java
+docker pull registry.alauda.cn/yubang/paas_base_nodejs
+docker pull registry.alauda.cn/yubang/paas_base_php
+docker pull registry.alauda.cn/yubang/paas_base_python2
+docker pull registry.alauda.cn/yubang/paas_base_python2_worker
+docker pull registry.alauda.cn/yubang/paas_base_static
+docker pull registry.alauda.cn/yubang/paas_base_python3
+docker pull registry.alauda.cn/yubang/paas_base_ruby
+
 # 生成ssh密钥
 ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
 

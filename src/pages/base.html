@@ -9,6 +9,8 @@
         <el-menu :default-active="tabIndex" class="el-menu-vertical-demo">
             <el-menu-item index="1" @click.native="gotoApps"><i class="el-icon-menu"></i>应用管理</el-menu-item>
             <el-menu-item index="2" @click.native="gotoContainerServer"><i class="el-icon-menu"></i>集群</el-menu-item>
+            <el-menu-item index="4" @click.native="gotoSsh"><i class="el-icon-menu"></i>ssh</el-menu-item>
+            <el-menu-item index="5" @click.native="gotoShell"><i class="el-icon-menu"></i>shell</el-menu-item>
             <el-menu-item index="3" @click.native="exitAccount"><i class="el-icon-menu"></i>退出登录</el-menu-item>
         </el-menu>
     </el-col>

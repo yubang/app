@@ -26,6 +26,7 @@ var routes = map[string]webTools.HttpHandler{
 	"/admin/api/login": login,
 	"/admin/api/getContainerServer": getContainerServer,
 	"/admin/api/deleteNode": deleteNode,
+	"/admin/api/getSsh": getSsh,
 }
 
 func createApp(r *webTools.HttpObject){
@@ -39,7 +40,7 @@ func createApp(r *webTools.HttpObject){
 	nums := r.Request.FormValue("nums")
 	image := r.Request.FormValue("image")
 
-	testImageName := "paas_test"
+	testImageName := r.OwnObj.(*OwnConfigInfo).TestImage
 	testImageCreateTime := timeTools.GetNowTime("%Y-%m-%d %H:%M:%S")
 	testImageAbout := "paas平台初始化测试镜像"
 
@@ -582,4 +583,11 @@ func deleteNode(obj *webTools.HttpObject){
 		return
 	}
 	obj.Output(httpCode.OkCode, nil)
+}
+
+// 获取ssh公钥
+func getSsh(obj *webTools.HttpObject){
+	redisClient := obj.OwnObj.(*OwnConfigInfo).RedisObject.GetRedisClient()
+	sshContent, _ := redisClient.Get(REDIS_KEY_SSH_STR).Result()
+	obj.Output(httpCode.OkCode, sshContent)
 }

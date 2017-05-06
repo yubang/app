@@ -8,6 +8,7 @@ type AdminAccountStruct struct {
 }
 
 type OwnConfigInfo struct {
+	TestImage string
 	HttpAddr string
 	RedisObject cacheTools.RedisClientObject
 	ImageMap map[string]string
@@ -27,3 +28,5 @@ var REDIS_KEY_POST_USE = "paas_port_use_set"
 var REDIS_KEY_APP_IMAGE_LIST = "paas_app_image_list_"
 
 var REDIS_KEY_BUILD_IMAGE_TASK_LIST = "paas_build_image_task_list"
+
+var REDIS_KEY_SSH_STR = "paas_ssh_str"

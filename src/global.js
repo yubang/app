@@ -6,6 +6,10 @@ function gotoContainerServer() {
     app.goto('/admin/web/server');
 }
 
+function gotoSsh() {
+    app.goto('/admin/web/ssh');
+}
+
 function exitAccount() {
     $.get("/admin/api/exit", {}, function(data){
         app.goto("/admin/web/login");

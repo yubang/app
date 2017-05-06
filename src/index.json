@@ -6,7 +6,8 @@
     {"url": "/admin/web/option-app", "path": "./pages/option_app"},
     {"url": "/admin/web/new-app", "path": "./pages/new_app"},
     {"url": "/admin/web/login", "path": "./pages/login"},
-    {"url": "/admin/web/server", "path": "./pages/server"}
+    {"url": "/admin/web/server", "path": "./pages/server"},
+    {"url": "/admin/web/ssh", "path": "./pages/ssh"}
   ],
   "title": "paas平台",
   "components": [
