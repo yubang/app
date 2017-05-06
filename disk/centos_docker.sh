@@ -1,11 +1,10 @@
 #!/bin/bash
 
+setenforce 0
+
 # 安装docker
 yum install epel-release -y
 yum install docker -y
-
-# 配置镜像地址
-echo '{ "insecure-registries":[":5000"] }' > /etc/docker/daemon.json
 
 # 启动docker
 systemctl start docker.service
