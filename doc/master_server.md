@@ -1,4 +1,4 @@
-# 镜像服务器配置
+# 主服务器配置
 
 * 下载代码
 
@@ -12,13 +12,13 @@ cd app-master/disk
 
 ```
 vim config.json
-修改Redis和ImageUrl的相关配置
+修改相关配置
 ```
 
 * 执行安装脚本
 
 ```
-/bin/bash centos_image.sh
+/bin/bash centos_master.sh
 ```
 
 * 修改docker配置，解决https错误问题
@@ -36,9 +36,8 @@ systemctl restart docker.service
 上面是centos7的安装教程，其他系统请执行实现下面的流程：
 
 * 下载代码，修改配置文件config.json
-* 安装git和docker（版本大于1.12）
-* 下载基础镜像（即config.json里面的Image列表镜像）
-* 生成git密钥
+* 安装redis和docker（版本大于1.12）
 * 修改docker配置，解决https错误问题
 * 重启docker
-* 启动imageWorker进程
+* 启动proxy进程
+* 启动web进程
