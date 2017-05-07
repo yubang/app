@@ -23,7 +23,7 @@
 
 ## 支持
 
-[安装教程](tree/master/doc/about.md)
+[安装教程](./tree/master/doc/about.md)
 
 * * * * *
 如有任何问题可以发送邮件到：yubang@yubangweb.com
