@@ -13,6 +13,7 @@ import (
 	"strings"
 	"../../ctsFrame/cacheTools"
 	"../../ctsFrame/timeTools"
+	"time"
 )
 
 
@@ -21,7 +22,11 @@ type ShellStruct struct{
 }
 
 func (obj *ShellStruct)ExecShell(command string)[]byte{
-	d, err := shellTools.RunCommand(command)
+	return obj.ExecShellNeedTimeout(command, time.Minute*1)
+}
+
+func (obj *ShellStruct)ExecShellNeedTimeout(command string, timeout time.Duration)[]byte{
+	d, err := shellTools.RunCommand(command, timeout)
 	if err != nil{
 		// 记录日志
 		log := jsonTools.InterfaceToJson(map[string]interface{}{

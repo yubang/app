@@ -55,7 +55,7 @@ func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientO
 
 	shellClient := docker.ShellStruct{cacheObj}
 	// clone代码
-	if shellClient.ExecShell("git clone --depth=1 " + gitUrl + " " + dirPath + "/web") == nil{
+	if shellClient.ExecShellNeedTimeout("git clone --depth=1 " + gitUrl + " " + dirPath + "/web", time.Minute * 10) == nil{
 		return false
 	}
 
@@ -65,15 +65,15 @@ func buildImage(appId string, imageName string, cacheObj cacheTools.RedisClientO
 	}
 
 	// 生成docker镜像
-	if shellClient.ExecShell("docker build -t  " + imageName + " " + dirPath) == nil{
+	if shellClient.ExecShellNeedTimeout("docker build -t  " + imageName + " " + dirPath, time.Minute * 10) == nil{
 		return false
 	}
 
 	// 提交镜像到仓库
-	if shellClient.ExecShell("docker tag "+imageName+" "+imageUrl+"/"+imageName) == nil{
+	if shellClient.ExecShellNeedTimeout("docker tag "+imageName+" "+imageUrl+"/"+imageName, time.Minute * 10) == nil{
 		return false
 	}
-	if shellClient.ExecShell("docker push "+imageUrl+"/"+imageName) == nil{
+	if shellClient.ExecShellNeedTimeout("docker push "+imageUrl+"/"+imageName, time.Minute * 10) == nil{
 		return false
 	}
 	return true
@@ -145,7 +145,7 @@ func handleTask(cacheObj cacheTools.RedisClientObject, imageMap map[string]inter
 	return sign
 }
 
-func main(){
+func initHandler(){
 	obj := jsonTools.JsonToInterface(fileTools.ReadFromFile("./config.json"))
 	cache := cacheTools.GetRedisClientObject(map[string]interface{}{
 		"host": obj["Redis"].(map[string]interface{})["Host"].(string),
@@ -166,5 +166,12 @@ func main(){
 		}
 
 	}
+}
 
+func main(){
+	go initHandler()
+	go initHandler()
+	go initHandler()
+	go initHandler()
+	initHandler()
 }
